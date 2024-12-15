@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #eaf7ff;
+        }
+        .dashboard-container {
+            text-align: center;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none; /* Hidden by default */
+        }
+        .unauthorized {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            font-size: 20px;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <!-- Unauthorized message (visible only if user is not logged in) -->
+    <div class="unauthorized" id="unauthorized">请先登录！</div>
+
+    <!-- Protected content (only visible after login) -->
+    <div class="dashboard-container" id="dashboard">
+        <h1>Welcome to the Dashboard</h1>
+        <p>You have successfully logged in.</p>
+
+        <!-- Add your protected content here -->
+        <p>This is your private dashboard content. Only logged-in users can see this!</p>
+        <ul>
+            <li>Item 1: Sensitive information</li>
+            <li>Item 2: Reports</li>
+            <li>Item 3: Settings</li>
+        </ul>
+        <a href="index.html">Return to Homepage</a>
+    </div>
+
+    <!-- Link to the authentication script -->
+    <script src="auth.js"></script>
+</body>
+</html>
