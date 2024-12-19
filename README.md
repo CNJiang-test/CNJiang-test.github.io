@@ -7,43 +7,47 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
             background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
         }
-        .container {
+        .navbar {
+            background-color: #4CAF50;
+            padding: 10px;
+            color: white;
             text-align: center;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            font-size: 18px;
+        .login-status {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 14px;
             color: #fff;
             background-color: #007bff;
-            text-decoration: none;
+            padding: 5px 10px;
             border-radius: 5px;
+            display: none; /* Hidden by default */
         }
-        a:hover {
-            background-color: #0056b3;
+        #mainContent {
+            padding: 20px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome to the Website</h1>
+    <div class="navbar">
+        <h1>Welcome to the Homepage</h1>
         <h2>ONLY FOR TEST</h2>
-        <a href="login.html">Go to Login</a>
     </div>
+
+    <!-- Login status -->
+    <div id="loginStatus" class="login-status">已登录</div>
+
+    <!-- Protected content area -->
+    <div id="mainContent"></div>
+
+    <!-- External JavaScript -->
+    <script src="home.js"></script>
 </body>
 </html>
+
