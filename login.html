@@ -7,63 +7,51 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-color: #eaf7ff;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
         }
         .login-container {
-            text-align: center;
-            background-color: #fff;
+            background-color: white;
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
         }
-        h1 {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-        input {
-            display: block;
+        .login-container input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
-            font-size: 18px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        button {
+        .login-container button {
             width: 100%;
             padding: 10px;
-            font-size: 18px;
-            background-color: #5cb85c;
-            color: #fff;
+            background-color: #4CAF50;
+            color: white;
             border: none;
             border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #4cae4c;
         }
         .message {
-            font-size: 20px;
-            margin-top: 20px;
+            margin-top: 10px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
-
     <div class="login-container">
-        <h1>Login</h1>
+        <h2>Login</h2>
         <input type="text" id="username" placeholder="账号" />
         <input type="password" id="password" placeholder="密码" />
         <button onclick="validateLogin()">登录</button>
-        <div class="message" id="message"></div>
+        <p class="message" id="message"></p>
     </div>
 
-    <!-- Link to external JavaScript -->
+    <!-- External JavaScript -->
     <script src="login.js"></script>
-
 </body>
 </html>
