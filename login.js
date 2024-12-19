@@ -8,12 +8,15 @@ function validateLogin() {
         message.style.color = 'green';
         message.textContent = '登录成功！';
 
-        // Save authentication state in session storage
+        // Store login status in session storage
         sessionStorage.setItem('isLoggedIn', 'true');
 
-        // Redirect to dashboard.html after 1 second
+        // Get the previous page URL or default to homepage
+        const redirectTo = document.referrer || 'index.html';
+
+        // Redirect to the previous page or homepage
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = redirectTo;
         }, 1000);
     } else {
         message.style.color = 'red';
