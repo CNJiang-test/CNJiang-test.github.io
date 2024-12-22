@@ -12,12 +12,18 @@
         h1 {
             text-align: center;
         }
-        textarea, input[type="file"] {
+        textarea {
             width: 100%;
             height: 100px;
             margin-bottom: 10px;
             padding: 10px;
             font-size: 16px;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
         button {
             padding: 10px 20px;
@@ -34,10 +40,6 @@
             border: 1px solid #ccc;
             padding: 10px;
             background-color: #f9f9f9;
-        }
-        .error {
-            color: red;
-            font-weight: bold;
         }
     </style>
 </head>
@@ -59,12 +61,10 @@
             <h2>结果:</h2>
             <textarea id="outputText" readonly></textarea>
         </div>
-
-        <div id="errorMessage" class="error"></div>
     </div>
 
     <script>
-        // 更复杂的加密算法 (AES, SHA-256)
+        // 简单哈希函数（防止字符编码问题）
         function simpleHash(str) {
             let hash = 0;
             for (let i = 0; i < str.length; i++) {
@@ -74,78 +74,52 @@
             return hash;
         }
 
-        // 统一处理输入文本和密钥的验证
-        function validateInput() {
-            const inputText = document.getElementById('inputText').value.trim();
-            const key = document.getElementById('key').value.trim();
-            const errorMessage = document.getElementById('errorMessage');
-            
-            if (!inputText || !key) {
-                errorMessage.textContent = '请输入有效的文本和密钥。';
-                return false;
-            }
-            errorMessage.textContent = '';
-            return true;
-        }
-
         // 加密函数
         function encryptText() {
-            if (!validateInput()) return;
-            
             let inputText = document.getElementById('inputText').value;
             let key = document.getElementById('key').value;
             let hash = simpleHash(key);
             
-            // 替换字符 & 动态位移加密
-            let encrypted = applyEncryption(inputText, hash);
+            let encrypted = '';
+            for (let i = 0; i < inputText.length; i++) {
+                let charCode = inputText.charCodeAt(i);
+                // 位移加密
+                let shift = (charCode + (hash & 0xFF)) % 256; 
+                encrypted += String.fromCharCode(shift);
+            }
             
-            // 显示加密结果
+            // 简单的字符交换算法
+            encrypted = swapCharacters(encrypted);
+            
+            // 噪音注入
+            encrypted = injectNoise(encrypted);
+
             document.getElementById('outputText').value = encrypted;
         }
 
         // 解密函数
         function decryptText() {
-            if (!validateInput()) return;
-
             let inputText = document.getElementById('inputText').value;
             let key = document.getElementById('key').value;
             let hash = simpleHash(key);
-            
-            // 去噪音 & 逆向混淆字符
+
+            // 去除噪音字符
             inputText = removeNoise(inputText);
-            inputText = swapCharacters(inputText);
             
-            // 恢复位移
-            let decrypted = applyDecryption(inputText, hash);
+            // 恢复字符交换
+            inputText = swapCharacters(inputText);
 
-            // 显示解密结果
-            document.getElementById('outputText').value = decrypted;
-        }
-
-        // 加密实现: 字符替换 + 位移 + 噪音
-        function applyEncryption(inputText, hash) {
-            let encrypted = '';
-            for (let i = 0; i < inputText.length; i++) {
-                let charCode = inputText.charCodeAt(i);
-                let shift = (charCode + (hash & 0xFF)) % 256;
-                encrypted += String.fromCharCode(shift);
-            }
-            encrypted = swapCharacters(encrypted);
-            return injectNoise(encrypted);
-        }
-
-        // 解密实现: 去噪音 + 位移恢复 + 混淆字符
-        function applyDecryption(inputText, hash) {
             let decrypted = '';
             for (let i = 0; i < inputText.length; i++) {
                 let charCode = inputText.charCodeAt(i);
                 let originalCharCode = (charCode - (hash & 0xFF) + 256) % 256;
                 decrypted += String.fromCharCode(originalCharCode);
             }
-            return decrypted;
+
+            document.getElementById('outputText').value = decrypted;
         }
 
-        // 交换字符
+        // 字符交换算法
         function swapCharacters(str) {
             let swapped = '';
             for (let i = 0; i < str.length; i += 2) {
@@ -158,7 +132,7 @@
             return swapped;
         }
 
-        // 向字符串注入噪音字符
+        // 注入噪音字符
         function injectNoise(str) {
             let noise = '!@#$%^&*()_+-=~<>?/';
             let noisyText = '';
@@ -171,11 +145,12 @@
             return noisyText;
         }
 
-        // 从加密文本中移除噪音字符
+        // 移除噪音字符
         function removeNoise(str) {
             let cleanText = '';
+            let validChars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
             for (let i = 0; i < str.length; i++) {
-                if ('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'.indexOf(str.charAt(i)) !== -1) {
+                if (validChars.indexOf(str.charAt(i)) !== -1) {
                     cleanText += str.charAt(i);
                 }
             }
