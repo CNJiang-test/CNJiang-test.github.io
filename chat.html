@@ -85,23 +85,6 @@
   const app = firebase.initializeApp(firebaseConfig);
   const database = firebase.database();
 
-  // Hardcoded password
-  const correctPassword = "password";
-
-  // Verify password
-  function verifyPassword() {
-    const inputPassword = document.getElementById('password-input').value;
-
-    if (inputPassword === correctPassword) {
-      alert("Access granted!");
-      document.getElementById('auth-container').classList.add('hidden');
-      document.getElementById('chat-container').classList.remove('hidden');
-      loadMessages();
-    } else {
-      alert("Incorrect password. Please try again.");
-    }
-  }
-
   // Load messages
   function loadMessages() {
     const messagesRef = database.ref('messages');
