@@ -1,53 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Homepage</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f0f0f0;
-            margin: 0;
-            padding: 0;
-        }
-        .navbar {
-            background-color: #4CAF50;
-            padding: 10px;
-            color: white;
-            text-align: center;
-        }
-        .login-status {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 14px;
-            color: #fff;
-            background-color: #007bff;
-            padding: 5px 10px;
-            border-radius: 5px;
-            display: none; /* Hidden by default */
-        }
-        #mainContent {
-            padding: 20px;
-            text-align: center;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的 GitHub 页面</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="navbar">
-        <h1>Welcome to the Homepage</h1>
-        <h2>ONLY FOR TEST</h2>
-    </div>
+  <h1>欢迎来到我的页面！</h1>
+  <p>这是我的 GitHub 页面，您可以与我实时聊天！</p>
 
-    <!-- Login status -->
-    <div id="loginStatus" class="login-status">已登录</div>
+  <!-- 在这里插入 Tawk.to 聊天脚本 -->
+  <script type="text/javascript">
+  var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+  (function(){
+  var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+  s1.async=true;
+  s1.src='https://embed.tawk.to/6769577749e2fd8dfefc9d65/1ifpnrb2r';
+  s1.charset='UTF-8';
+  s1.setAttribute('crossorigin','*');
+  s0.parentNode.insertBefore(s1,s0);
+  })();
+  </script>
 
-    <!-- Protected content area -->
-    <div id="mainContent"></div>
-
-    <!-- External JavaScript -->
-    <script src="home.js"></script>
 </body>
 </html>
-
