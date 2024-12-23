@@ -38,6 +38,11 @@
     #message-form button {
       padding: 10px;
     }
+    #messages p {
+      margin: 0;
+      padding: 5px;
+      border-bottom: 1px solid #ddd;
+    }
   </style>
 </head>
 <body>
@@ -47,7 +52,7 @@
 <div id="chat-container">
   <div id="messages"></div>
   <form id="message-form" onsubmit="sendMessage(event)">
-    <input type="text" id="message-input" placeholder="Type your message">
+    <input type="text" id="message-input" placeholder="Type your message" required>
     <button type="submit">Send</button>
   </form>
 </div>
@@ -76,7 +81,7 @@
 
     messagesRef.on('value', (snapshot) => {
       const messages = snapshot.val();
-      messagesDiv.innerHTML = '';
+      messagesDiv.innerHTML = ''; // Clear existing messages
 
       if (messages) {
         Object.values(messages).forEach((msg) => {
@@ -84,6 +89,7 @@
           p.textContent = `${msg.username}: ${msg.text}`;
           messagesDiv.appendChild(p);
         });
+        // Scroll to the bottom of the messages container
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
       }
     });
@@ -91,19 +97,29 @@
 
   // Send message to Firebase
   function sendMessage(event) {
-    event.preventDefault();
+    event.preventDefault(); // Prevent the default form submission
+
     const messageInput = document.getElementById('message-input');
     const message = messageInput.value;
-    const username = "Guest";  // You can change this to any dynamic user identifier
+    const username = "Guest";  // Default username, can be dynamic
 
     if (message.trim()) {
+      console.log('Sending message:', message);  // Debugging log
+
       const messagesRef = database.ref('messages');
       messagesRef.push({
         username,
         text: message,
         timestamp: Date.now()
+      }).then(() => {
+        console.log('Message sent successfully');  // Message sent
+      }).catch((error) => {
+        console.error('Error sending message:', error);  // Error handling
       });
-      messageInput.value = '';  // Clear the input after sending
+
+      messageInput.value = '';  // Clear input after sending
+    } else {
+      console.log('Message is empty');  // Log if message is empty
     }
   }
 
