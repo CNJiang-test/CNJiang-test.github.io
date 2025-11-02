@@ -14,6 +14,8 @@ body{
   background:#000;
   color:#fff;
   font-family:"Inter",sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
   overflow:hidden;
 }
 
@@ -30,22 +32,22 @@ body{
 .container{
   height:100vh;
   overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
   scroll-behavior:smooth;
   position:relative;
 }
 
-/* Section */
+/* Section 基础样式 */
 section{
   min-height:100vh;
   display:flex;align-items:center;justify-content:center;
   padding:2rem;
-  opacity:0.25;
+  opacity:.25;
   filter:brightness(.55);
   transition:opacity .7s ease,filter .7s ease,transform .7s ease;
   transform-origin:center;
   position:relative;
   z-index:2;
-  flex-direction:column;
 }
 section.active{
   opacity:1;
@@ -61,6 +63,7 @@ section.active{
   background-size:200% 200%;
   -webkit-background-clip:text;
   -webkit-text-fill-color:transparent;
+  background-clip:text;
   animation:glow 2s infinite ease-in-out;
 }
 .title-name{
@@ -72,17 +75,19 @@ section.active{
 /* Wishes */
 .wish-text{
   max-width:900px;
-  font-size:clamp(1rem,4vw,2rem);
+  font-size:clamp(1.2rem,4vw,2.2rem);
   text-align:center;
   opacity:0;
   transform:translateY(24px);
   transition:opacity .75s ease,transform .75s ease;
   text-shadow:0 0 16px rgba(255,255,255,.6);
+  margin:1rem 0;
+  line-height:1.6;
 }
 #screen2.active .wish-text:nth-child(1){transition-delay:0s;opacity:1;transform:none}
-#screen2.active .wish-text:nth-child(2){transition-delay:.12s;opacity:1;transform:none}
-#screen2.active .wish-text:nth-child(3){transition-delay:.24s;opacity:1;transform:none}
-#screen2.active .wish-text:nth-child(4){transition-delay:.36s;opacity:1;transform:none}
+#screen2.active .wish-text:nth-child(2){transition-delay:.15s;opacity:1;transform:none}
+#screen2.active .wish-text:nth-child(3){transition-delay:.3s;opacity:1;transform:none}
+#screen2.active .wish-text:nth-child(4){transition-delay:.45s;opacity:1;transform:none}
 
 /* Particle 背景 */
 #particleBg{
@@ -94,41 +99,64 @@ section.active{
 }
 
 /* 游戏区布局 */
-#screen3{flex-direction:column;gap:1rem}
+#screen3{flex-direction:column;gap:1.5rem}
 .controls-panel{
   width:100%;max-width:540px;background:rgba(17,24,39,.72);
   border:1px solid rgba(107,114,128,.45);
   border-radius:12px;padding:16px;backdrop-filter:blur(8px);
   text-align:center;z-index:4;margin-bottom:6px;
 }
-.controls-panel h3{font-family:"Great Vibes",cursive;margin-bottom:12px;font-size:1.6rem}
+.controls-panel h3{font-family:"Great Vibes",cursive;margin-bottom:12px;font-size:1.8rem;
+  background:linear-gradient(to right,#a855f7,#ec4899);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
 .input-wish{
   width:100%;padding:10px 12px;border-radius:10px;border:2px solid #a855f7;
   background:rgba(17,24,39,.9);color:#fff;font-size:15px;margin-bottom:10px;
 }
+.input-wish:focus{outline:none;border-color:#ec4899;box-shadow:0 0 20px rgba(236,72,153,.4)}
 .controls-row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
 .btn{
-  padding:10px 14px;border-radius:10px;border:0;font-weight:600;cursor:pointer;background:linear-gradient(90deg,#a855f7,#ec4899);color:#fff;
-  box-shadow:0 6px 18px rgba(168,85,247,.18)
+  padding:11px 16px;border-radius:10px;border:0;font-weight:600;cursor:pointer;
+  background:linear-gradient(90deg,#a855f7,#ec4899);color:#fff;
+  box-shadow:0 6px 18px rgba(168,85,247,.18);
+  transition:transform .2s ease,box-shadow .2s ease;
 }
-.btn.ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#ddd}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(168,85,247,.3)}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn.ghost{
+  background:rgba(31,41,55,.9);
+  border:1px solid rgba(75,85,99,.6);
+  color:#ddd;
+  box-shadow:none;
+}
+.btn.ghost:hover{border-color:#a855f7;background:rgba(31,41,55,1)}
 
-/* 视频区域 */
+/* 视频区域 - 修复竖屏显示 */
 .video-wrapper{
-  width:90%;
-  max-width:540px;
+  width:100%;
+  max-width:min(90vw, 600px);
   aspect-ratio:3/4;
   border-radius:12px;
   overflow:hidden;
   background:#000;
   position:relative;
   display:flex;align-items:center;justify-content:center;z-index:3;
+  box-shadow:0 10px 40px rgba(0,0,0,.5);
 }
 video{
   width:100%;height:100%;
-  object-fit:contain;
+  object-fit:cover;
   display:block;
   background:#000;
+}
+
+/* 电脑端视频优化 */
+@media (min-width:721px) and (min-height:800px){
+  .video-wrapper{
+    max-width:480px;
+    max-height:640px;
+  }
 }
 
 /* wish overlay */
@@ -136,36 +164,106 @@ video{
   position:absolute;top:8%;left:50%;transform:translateX(-50%);
   width:90%;text-align:center;z-index:6;pointer-events:none;
 }
-.wish-display{font-size:clamp(1.1rem,3vw,1.9rem);text-shadow:0 0 18px rgba(255,255,255,.9)}
-.final-message{font-size:clamp(1.4rem,3.4vw,2.6rem);background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(168,85,247,.6));}
+.wish-display{
+  font-size:clamp(1.1rem,3vw,1.9rem);
+  text-shadow:0 0 24px rgba(255,255,255,.95),0 0 48px rgba(168,85,247,.6);
+  color:#fff;
+  animation:wishFadeIn .8s ease-out forwards;
+}
+.final-message{
+  font-size:clamp(1.6rem,3.8vw,2.8rem);
+  background:linear-gradient(135deg,#a855f7,#ec4899,#f59e0b);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 28px rgba(168,85,247,.7));
+  animation:wishFadeIn .8s ease-out forwards;
+}
 
-/* Final section */
+/* Final section - 修复烟花画布 */
 #screen4{
-  display:flex;align-items:center;justify-content:center;
-  flex-direction:column;text-align:center;height:100%;
+  position:relative;
+  overflow:hidden;
 }
-.final-title{font-size:clamp(2.2rem,9vw,6rem);-webkit-background-clip:text;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-text-fill-color:transparent;margin-bottom:10px}
-.final-subtitle{font-size:clamp(1.2rem,3.5vw,2rem);color:#d1d5db;text-align:center}
+#screen4 > div{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  text-align:center;z-index:10;position:relative;
+}
+.final-title{
+  font-size:clamp(2.4rem,9vw,6.5rem);
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  filter:drop-shadow(0 0 40px rgba(102,126,234,.6));
+  margin-bottom:1.5rem;
+  line-height:1.2;
+}
+.final-subtitle{
+  font-size:clamp(1.3rem,3.5vw,2.2rem);
+  color:#d1d5db;
+  text-align:center;
+  text-shadow:0 0 20px rgba(255,255,255,.3);
+}
 
-/* small screens */
+/* 烟花画布 */
+#fireworksCanvas{
+  position:absolute;
+  top:0;left:0;
+  width:100%;height:100%;
+  pointer-events:none;
+  z-index:5;
+}
+
+/* 手机端修复 - 强制显示内容 */
 @media (max-width:720px){
-  .video-wrapper{height:auto;aspect-ratio:3/4}
+  section{
+    opacity:1 !important;
+    filter:brightness(1) !important;
+  }
+  #screen2 .wish-text{
+    opacity:1 !important;
+    transform:none !important;
+  }
+  .video-wrapper{
+    max-width:90vw;
+    aspect-ratio:3/4;
+  }
+  video{
+    object-fit:contain;
+  }
   .controls-panel{padding:12px}
-  .title-main{font-size:clamp(2rem,16vw,5rem)}
-  .title-name{font-size:clamp(1.4rem,10vw,3rem)}
-  section{opacity:0.25;filter:brightness(.55);} /* 保证淡入淡出生效 */
+  .title-main{font-size:clamp(2.2rem,16vw,5.5rem)}
+  .title-name{font-size:clamp(1.5rem,12vw,3.5rem)}
 }
 
-@keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 12px currentColor)}50%{filter:brightness(1.2) drop-shadow(0 0 26px currentColor)}}
-@keyframes particleMove{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(var(--dx,20px),var(--dy,-40px),0)}}
+/* keyframes */
+@keyframes glow{
+  0%,100%{filter:brightness(1) drop-shadow(0 0 12px currentColor)}
+  50%{filter:brightness(1.2) drop-shadow(0 0 26px currentColor)}
+}
+@keyframes particleMove{
+  0%{transform:translate3d(0,0,0)}
+  100%{transform:translate3d(var(--dx,20px),var(--dy,-40px),0)}
+}
+@keyframes wishFadeIn{
+  0%{opacity:0;transform:translateY(20px) scale(.95)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
 </style>
 </head>
 <body>
 
+<!-- Loading -->
 <div id="loading"><div class="loading-text cursive-title">Loading Magic... ✨</div></div>
+
+<!-- Particle 背景 -->
 <div id="particleBg" aria-hidden="true"></div>
+
+<!-- Container -->
 <div class="container" id="mainContainer" tabindex="0">
 
+  <!-- Screen 1 -->
   <section id="screen1" aria-label="intro">
     <div style="text-align:center;z-index:3">
       <div class="title-main cursive-title">Happy Birthday</div>
@@ -173,6 +271,7 @@ video{
     </div>
   </section>
 
+  <!-- Screen 2 -->
   <section id="screen2" aria-label="wishes">
     <div style="max-width:1000px;text-align:center">
       <p class="wish-text cursive-body">On this special day, may your smile shine as bright as the sun</p>
@@ -182,55 +281,277 @@ video{
     </div>
   </section>
 
+  <!-- Screen 3 -->
   <section id="screen3" aria-label="game">
-    <div class="controls-panel" id="wishPanel">
+    <div class="controls-panel" id="wishPanel" role="region" aria-label="wish input">
       <h3 class="cursive-title">Make a Wish</h3>
-      <input id="wishInput" class="input-wish" type="text" placeholder="Type your wish here..." />
+      <input id="wishInput" class="input-wish" type="text" placeholder="Type your wish here..." aria-label="wish input" />
       <div class="controls-row">
         <button id="confirmBtn" class="btn">Confirm Wish ✨</button>
         <button id="preset1" class="btn ghost">Stay happy every day</button>
         <button id="preset2" class="btn ghost">Dreams come true</button>
       </div>
     </div>
-    <div class="video-wrapper">
+
+    <div class="video-wrapper" id="videoWrapper" aria-live="polite">
       <video id="cakeVideo" autoplay muted playsinline preload="auto" loop>
         <source src="burn.mp4" type="video/mp4">
       </video>
-      <div id="wishOverlay"></div>
+      <div id="wishOverlay" aria-hidden="false"></div>
     </div>
-    <div class="controls-panel" id="actionPanel" style="display:none">
-      <div class="controls-row">
-        <button id="blowBtn" class="btn">Blow Out Candles 🌬️</button>
-        <button id="backBtn" class="btn ghost">Go Back ↩️</button>
+
+    <div class="controls-panel" id="actionPanel" style="display:none" role="region" aria-label="actions">
+      <div class="controls-row" style="justify-content:center">
+        <button id="blowBtn" class="btn">🌬️ Blow Out Candles</button>
+        <button id="backBtn" class="btn ghost">↩️ Go Back</button>
       </div>
     </div>
   </section>
 
+  <!-- Screen 4 -->
   <section id="screen4" aria-label="final">
+    <canvas id="fireworksCanvas"></canvas>
     <div>
       <div class="final-title cursive-title">May You Always Be Happy</div>
       <div class="final-subtitle cursive-body">✨ Happy Birthday, Dear Friend ✨</div>
     </div>
   </section>
-
 </div>
 
 <script>
 function debounce(fn,wait=150){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),wait)}}
-function buildParticles(){const container=document.getElementById('particleBg');container.innerHTML='';const isMobile=window.innerWidth<720;const count=isMobile?60:140;const colors=['#ff6b9d','#ffa500','#00d2ff','#a8ff78','#f093fb','#ffd166'];for(let i=0;i<count;i++){const el=document.createElement('div');el.className='particle';const size=Math.random()*6+2;const color=colors[Math.floor(Math.random()*colors.length)];const left=Math.random()*100;const top=Math.random()*110-5;const dx=(Math.random()*2-1)*(10+Math.random()*40);const dy=-(15+Math.random()*70);const dur=8+Math.random()*18;const delay=-(Math.random()*dur);el.style.width=size+'px';el.style.height=size+'px';el.style.left=left+'%';el.style.top=top+'%';el.style.background=color;el.style.opacity=(0.18+Math.random()*0.7).toFixed(2);el.style.boxShadow=`0 0 ${Math.max(6,size*3)}px ${color}`;el.style.setProperty('--dx',dx+'px');el.style.setProperty('--dy',dy+'px');el.style.animation=`particleMove ${dur}s linear ${delay}s infinite`;container.appendChild(el);}}
-function initSectionObserver(){const sections=document.querySelectorAll('section');const obs=new IntersectionObserver(entries=>{entries.forEach(entry=>{const el=entry.target;const r=entry.intersectionRatio;if(r>=0.5){el.classList.add('active');}else if(r===0){el.classList.remove('active');}});},{root:null,rootMargin:'-25% 0px -25% 0px',threshold:[0,0.25,0.5,0.75,1]});sections.forEach(s=>obs.observe(s));}
-function waitVideoReady(videoEl,timeout=8000){return new Promise((resolve,reject)=>{let done=false;function onReady(){if(done)return;done=true;cleanup();resolve();}function onErr(){if(done)return;done=true;cleanup();reject(new Error('video load failed'));}function cleanup(){videoEl.removeEventListener('canplay',onReady);videoEl.removeEventListener('error',onErr);}videoEl.addEventListener('canplay',onReady);videoEl.addEventListener('error',onErr);setTimeout(()=>{if(!done){done=true;cleanup();resolve();}},timeout);})}
 
-window.addEventListener('load',async()=>{
+function buildParticles(){
+  const container=document.getElementById('particleBg'); container.innerHTML='';
+  const isMobile=window.innerWidth<720; const count=isMobile?60:140;
+  const colors=['#ff6b9d','#ffa500','#00d2ff','#a8ff78','#f093fb','#ffd166'];
+  for(let i=0;i<count;i++){
+    const el=document.createElement('div'); el.className='particle';
+    const size=Math.random()*6+2; const color=colors[Math.floor(Math.random()*colors.length)];
+    const left=Math.random()*100; const top=Math.random()*110-5;
+    const dx=(Math.random()*2-1)*(10+Math.random()*40); const dy=-(15+Math.random()*70);
+    const dur=8+Math.random()*18; const delay=-(Math.random()*dur);
+    el.style.width=size+'px'; el.style.height=size+'px'; el.style.left=left+'%'; el.style.top=top+'%';
+    el.style.background=color; el.style.opacity=(0.18+Math.random()*0.7).toFixed(2);
+    el.style.boxShadow=`0 0 ${Math.max(6,size*3)}px ${color}`;
+    el.style.setProperty('--dx',dx+'px'); el.style.setProperty('--dy',dy+'px');
+    el.style.animation=`particleMove ${dur}s linear ${delay}s infinite`; el.style.borderRadius='50%';
+    container.appendChild(el);
+  }
+}
+
+function initSectionObserver(){
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('section').forEach(s=>s.classList.add('active')); return;
+  }
+  const sections=document.querySelectorAll('section');
+  const options={root:null,rootMargin:'-25% 0px -25% 0px',threshold:[0,0.25,0.5,0.75,1]};
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      const el=entry.target; 
+      const r=entry.intersectionRatio;
+      if(r>=0.5){
+        el.classList.add('active');
+        // 触发烟花
+        if(el.id==='screen4' && !window.fireworksStarted){
+          window.fireworksStarted=true;
+          initFireworks();
+        }
+      }else if(r===0){
+        el.classList.remove('active');
+        // 停止烟花
+        if(el.id==='screen4'){
+          window.fireworksStarted=false;
+          stopFireworks();
+        }
+      }
+    });
+  },options);
+  sections.forEach(s=>obs.observe(s));
+}
+
+// ========== 烟花系统 ==========
+let fireworksCanvas=null;
+let fireworksCtx=null;
+let fireworks=[];
+let particles=[];
+let animationId=null;
+
+class Firework{
+  constructor(x,y){
+    this.x=x;this.y=y;this.targetY=y-Math.random()*200-150;
+    this.speed=Math.random()*3+5;this.vy=-this.speed;
+    this.hue=Math.random()*360;this.trail=[];this.exploded=false;
+  }
+  update(){
+    if(!this.exploded){
+      this.trail.push({x:this.x,y:this.y});
+      if(this.trail.length>10)this.trail.shift();
+      this.y+=this.vy;this.vy+=0.05;
+      if(this.y<=this.targetY){
+        this.exploded=true;
+        createExplosion(this.x,this.y,this.hue);
+      }
+    }
+    return !this.exploded;
+  }
+  draw(ctx){
+    if(!this.exploded){
+      ctx.save();
+      this.trail.forEach((p,i)=>{
+        const a=(i/this.trail.length)*0.8;
+        ctx.fillStyle=`hsla(${this.hue},100%,70%,${a})`;
+        const s=(i/this.trail.length)*3;
+        ctx.fillRect(p.x-s/2,p.y-s/2,s,s);
+      });
+      ctx.shadowBlur=15;ctx.shadowColor=`hsl(${this.hue},100%,70%)`;
+      ctx.fillStyle=`hsl(${this.hue},100%,70%)`;
+      ctx.beginPath();ctx.arc(this.x,this.y,3,0,Math.PI*2);ctx.fill();
+      ctx.restore();
+    }
+  }
+}
+
+class Particle{
+  constructor(x,y,hue){
+    this.x=x;this.y=y;this.hue=hue+Math.random()*30-15;
+    const a=Math.random()*Math.PI*2;const spd=Math.random()*6+2;
+    this.vx=Math.cos(a)*spd;this.vy=Math.sin(a)*spd;
+    this.gravity=0.08;this.friction=0.98;this.opacity=1;
+    this.decay=Math.random()*0.015+0.01;this.size=Math.random()*3+2;
+    this.trail=[];this.sparkle=Math.random()>0.7;
+  }
+  update(){
+    this.trail.push({x:this.x,y:this.y,opacity:this.opacity});
+    if(this.trail.length>5)this.trail.shift();
+    this.vx*=this.friction;this.vy*=this.friction;this.vy+=this.gravity;
+    this.x+=this.vx;this.y+=this.vy;this.opacity-=this.decay;
+    return this.opacity>0;
+  }
+  draw(ctx){
+    ctx.save();
+    this.trail.forEach((p,i)=>{
+      const a=(i/this.trail.length)*p.opacity*0.5;
+      ctx.fillStyle=`hsla(${this.hue},100%,60%,${a})`;
+      const s=(i/this.trail.length)*this.size*0.5;
+      ctx.fillRect(p.x-s/2,p.y-s/2,s,s);
+    });
+    ctx.shadowBlur=20;ctx.shadowColor=`hsl(${this.hue},100%,60%)`;
+    const grad=ctx.createRadialGradient(this.x,this.y,0,this.x,this.y,this.size);
+    grad.addColorStop(0,`hsla(${this.hue},100%,80%,${this.opacity})`);
+    grad.addColorStop(0.5,`hsla(${this.hue},100%,60%,${this.opacity*0.8})`);
+    grad.addColorStop(1,`hsla(${this.hue},100%,40%,0)`);
+    ctx.fillStyle=grad;ctx.beginPath();ctx.arc(this.x,this.y,this.size,0,Math.PI*2);ctx.fill();
+    ctx.restore();
+  }
+}
+
+function createExplosion(x,y,hue){
+  const count=Math.random()*30+50;
+  for(let i=0;i<count;i++)particles.push(new Particle(x,y,hue));
+  for(let i=0;i<5;i++){
+    const sp=new Particle(x,y,hue);sp.size=Math.random()*4+4;sp.sparkle=true;
+    particles.push(sp);
+  }
+}
+
+function launchFirework(){
+  if(!fireworksCanvas)return;
+  const x=Math.random()*fireworksCanvas.width*0.6+fireworksCanvas.width*0.2;
+  const y=fireworksCanvas.height;
+  fireworks.push(new Firework(x,y));
+}
+
+function animateFireworks(){
+  if(!fireworksCtx||!fireworksCanvas)return;
+  fireworksCtx.fillStyle='rgba(0,0,0,0.1)';
+  fireworksCtx.fillRect(0,0,fireworksCanvas.width,fireworksCanvas.height);
+  if(Math.random()<0.08)launchFirework();
+  fireworks=fireworks.filter(f=>{f.draw(fireworksCtx);return f.update();});
+  particles=particles.filter(p=>{p.draw(fireworksCtx);return p.update();});
+  animationId=requestAnimationFrame(animateFireworks);
+}
+
+function initFireworks(){
+  fireworksCanvas=document.getElementById('fireworksCanvas');
+  if(!fireworksCanvas)return;
+  fireworksCtx=fireworksCanvas.getContext('2d');
+  fireworksCanvas.width=fireworksCanvas.offsetWidth;
+  fireworksCanvas.height=fireworksCanvas.offsetHeight;
+  window.addEventListener('resize',()=>{
+    if(fireworksCanvas){
+      fireworksCanvas.width=fireworksCanvas.offsetWidth;
+      fireworksCanvas.height=fireworksCanvas.offsetHeight;
+    }
+  });
+  animateFireworks();
+  setTimeout(()=>launchFirework(),500);
+  setTimeout(()=>launchFirework(),800);
+  setTimeout(()=>launchFirework(),1200);
+}
+
+function stopFireworks(){
+  if(animationId){cancelAnimationFrame(animationId);animationId=null;}
+  fireworks=[];particles=[];
+}
+
+// ========== 视频与交互 ==========
+function waitVideoReady(videoEl, timeout=8000){
+  return new Promise((resolve,reject)=>{
+    let done=false;
+    function onReady(){if(done) return; done=true; cleanup(); resolve();}
+    function onErr(){if(done) return; done=true; cleanup(); reject(new Error('video load failed'));}
+    function cleanup(){videoEl.removeEventListener('canplaythrough', onReady);videoEl.removeEventListener('loadeddata', onReady);videoEl.removeEventListener('error', onErr);}
+    videoEl.addEventListener('canplaythrough', onReady, {once:true}); videoEl.addEventListener('loadeddata', onReady, {once:true}); videoEl.addEventListener('error', onErr, {once:true});
+    setTimeout(()=>{if(!done){done=true;cleanup();resolve();}}, timeout);
+  });
+}
+
+const UI={};
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function showWish(text){UI.wishOverlay.innerHTML=`<div class="wish-display cursive-body">${escapeHtml(text)}</div>`;}
+function clearWish(){UI.wishOverlay.innerHTML='';}
+function enableControlsForConfirm(){UI.wishPanel.style.display='none'; UI.actionPanel.style.display='block';}
+function resetToInput(){UI.wishPanel.style.display='block'; UI.actionPanel.style.display='none'; clearWish(); UI.wishInput.value='';}
+function onConfirm(){const v=UI.wishInput.value.trim(); if(!v) return; showWish(v); enableControlsForConfirm(); const video=UI.cakeVideo; if(video.src.indexOf('burn.mp4')===-1){video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{});}}
+function onBlow(){UI.blowBtn.disabled=true; UI.backBtn.disabled=true; const video=UI.cakeVideo; video.loop=false; video.src='blow.mp4'; video.load(); clearWish(); waitVideoReady(video).then(()=>{video.play().catch(()=>{});}); video.addEventListener('ended',function onEnded(){UI.wishOverlay.innerHTML=`<div class="final-message cursive-title">Your wish will come true ✨</div>`; UI.blowBtn.disabled=true; UI.backBtn.disabled=false; video.removeEventListener('ended',onEnded);});}
+function onBack(){const video=UI.cakeVideo; video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{}); resetToInput(); UI.blowBtn.disabled=false; UI.backBtn.disabled=false;}
+function bindUI(){
+  UI.wishInput=document.getElementById('wishInput');
+  UI.confirmBtn=document.getElementById('confirmBtn');
+  UI.preset1=document.getElementById('preset1');
+  UI.preset2=document.getElementById('preset2');
+  UI.wishPanel=document.getElementById('wishPanel');
+  UI.actionPanel=document.getElementById('actionPanel');
+  UI.blowBtn=document.getElementById('blowBtn');
+  UI.backBtn=document.getElementById('backBtn');
+  UI.cakeVideo=document.getElementById('cakeVideo');
+  UI.wishOverlay=document.getElementById('wishOverlay');
+  UI.videoWrapper=document.getElementById('videoWrapper');
+
+  UI.confirmBtn.addEventListener('click',onConfirm);
+  UI.blowBtn.addEventListener('click',onBlow);
+  UI.backBtn.addEventListener('click',onBack);
+  UI.preset1.addEventListener('click',()=>{UI.wishInput.value='Stay happy every day';});
+  UI.preset2.addEventListener('click',()=>{UI.wishInput.value='Dreams come true';});
+  UI.wishInput.addEventListener('keypress',(e)=>{if(e.key==='Enter'){onConfirm(); e.preventDefault();}});
+}
+
+async function init(){
   buildParticles();
   initSectionObserver();
+  bindUI();
+  const video=UI.cakeVideo;
+  try{await waitVideoReady(video,7000);}catch(e){}
+  await new Promise(r=>setTimeout(r,300));
   const loading=document.getElementById('loading');
-  const video=document.getElementById('cakeVideo');
-  await waitVideoReady(video);
-  loading.style.opacity=0;
-  setTimeout(()=>loading.style.display='none',500);
-  window.addEventListener('resize',debounce(buildParticles,300));
-});
+  loading.style.opacity='0';
+  setTimeout(()=>{loading.style.display='none';},500);
+}
+
+window.addEventListener('load',init);
+window.addEventListener('resize',debounce(buildParticles,200));
 </script>
+
 </body>
 </html>
