@@ -8,7 +8,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
-/* -------------------- 基础样式 -------------------- */
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}
 body{
@@ -20,7 +19,7 @@ body{
   overflow:hidden;
 }
 
-/* loading 覆盖层 */
+/* Loading */
 #loading{
   position:fixed;inset:0;
   display:flex;align-items:center;justify-content:center;
@@ -29,7 +28,7 @@ body{
 }
 .loading-text{font-family:"Great Vibes",cursive;font-size:1.8rem;color:#a855f7;}
 
-/* 主容器 可滚动 */
+/* Container */
 .container{
   height:100vh;
   overflow-y:auto;
@@ -38,7 +37,7 @@ body{
   position:relative;
 }
 
-/* section 基础与亮度过渡（严格）*/
+/* Section 基础样式 */
 section{
   min-height:100vh;
   display:flex;align-items:center;justify-content:center;
@@ -55,7 +54,7 @@ section.active{
   filter:brightness(1);
 }
 
-/* typography */
+/* Typography */
 .cursive-title{font-family:"Great Vibes",cursive}
 .cursive-body{font-family:"Dancing Script",cursive}
 .title-main{
@@ -72,7 +71,7 @@ section.active{
   text-shadow:0 0 18px #00d2ff,0 0 36px #00d2ff;
 }
 
-/* wishes */
+/* Wishes */
 .wish-text{
   max-width:900px;
   font-size:clamp(1rem,4vw,2rem);
@@ -87,12 +86,10 @@ section.active{
 #screen2.active .wish-text:nth-child(3){transition-delay:.24s;opacity:1;transform:none}
 #screen2.active .wish-text:nth-child(4){transition-delay:.36s;opacity:1;transform:none}
 
-/* particle 背景（fixed）*/
+/* Particle 背景 */
 #particleBg{
   position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;
 }
-
-/* 单个粒子基础 */
 .particle{
   position:absolute;border-radius:50%;will-change:transform,opacity;
   mix-blend-mode:screen;filter:blur(.6px);
@@ -118,354 +115,209 @@ section.active{
 }
 .btn.ghost{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:#ddd}
 
-/* 视频区域：确保文字不被裁剪与可见性 */
+/* 视频区域 */
 .video-wrapper{
-  width:100%;max-width:920px;height:520px;border-radius:12px;overflow:hidden;background:#000;position:relative;
+  width:90%;
+  max-width:540px;
+  aspect-ratio:3/4;
+  border-radius:12px;
+  overflow:hidden;
+  background:#000;
+  position:relative;
   display:flex;align-items:center;justify-content:center;z-index:3;
 }
 video{
-  width:100%;height:100%;object-fit:cover;display:block;
+  width:100%;height:100%;
+  object-fit:contain;
+  display:block;
+  background:#000;
 }
 
-/* wish overlay 放在视频上方，响应式布局保证不遮挡控件 */
-#wishOverlay{position:absolute;top:8%;left:50%;transform:translateX(-50%);width:90%;text-align:center;z-index:6;pointer-events:none}
+/* wish overlay */
+#wishOverlay{
+  position:absolute;top:8%;left:50%;transform:translateX(-50%);
+  width:90%;text-align:center;z-index:6;pointer-events:none;
+}
 .wish-display{font-size:clamp(1.1rem,3vw,1.9rem);text-shadow:0 0 18px rgba(255,255,255,.9)}
 .final-message{font-size:clamp(1.4rem,3.4vw,2.6rem);background:linear-gradient(135deg,#a855f7,#ec4899);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 24px rgba(168,85,247,.6));}
 
-/* final section */
+/* Final section */
+#screen4 > div{
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;height:100%;
+}
 .final-title{font-size:clamp(2.2rem,9vw,6rem);-webkit-background-clip:text;background:linear-gradient(135deg,#667eea,#764ba2);-webkit-text-fill-color:transparent;margin-bottom:10px}
+.final-subtitle{font-size:clamp(1.2rem,3.5vw,2rem);color:#d1d5db;text-align:center}
 
 /* small screens */
 @media (max-width:720px){
-  .video-wrapper{height:320px}
+  .video-wrapper{height:auto;aspect-ratio:3/4}
   .controls-panel{padding:12px}
   .title-main{font-size:clamp(2rem,16vw,5rem)}
   .title-name{font-size:clamp(1.4rem,10vw,3rem)}
+  section{opacity:1 !important; filter:brightness(1) !important}
+  #screen2 .wish-text{opacity:1 !important; transform:none !important}
 }
 
 /* keyframes */
 @keyframes glow{0%,100%{filter:brightness(1) drop-shadow(0 0 12px currentColor)}50%{filter:brightness(1.2) drop-shadow(0 0 26px currentColor)}}
 @keyframes particleMove{0%{transform:translate3d(0,0,0)}100%{transform:translate3d(var(--dx,20px),var(--dy,-40px),0)}}
-@keyframes wishAppear{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:none}}
 </style>
 </head>
 <body>
-  <!-- Loading 覆盖层 -->
-  <div id="loading"><div class="loading-text cursive-title">Loading Magic... ✨</div></div>
 
-  <!-- 粒子背景 -->
-  <div id="particleBg" aria-hidden="true"></div>
+<!-- Loading -->
+<div id="loading"><div class="loading-text cursive-title">Loading Magic... ✨</div></div>
 
-  <!-- 主滚动容器 -->
-  <div class="container" id="mainContainer" tabindex="0">
-    <!-- Screen 1 -->
-    <section id="screen1" aria-label="intro">
-      <div style="text-align:center;z-index:3">
-        <div class="title-main cursive-title">Happy Birthday</div>
-        <div class="title-name cursive-title">Alisia</div>
+<!-- Particle 背景 -->
+<div id="particleBg" aria-hidden="true"></div>
+
+<!-- Container -->
+<div class="container" id="mainContainer" tabindex="0">
+
+  <!-- Screen 1 -->
+  <section id="screen1" aria-label="intro">
+    <div style="text-align:center;z-index:3">
+      <div class="title-main cursive-title">Happy Birthday</div>
+      <div class="title-name cursive-title">Alisia</div>
+    </div>
+  </section>
+
+  <!-- Screen 2 -->
+  <section id="screen2" aria-label="wishes">
+    <div style="max-width:1000px;text-align:center">
+      <p class="wish-text cursive-body">On this special day, may your smile shine as bright as the sun</p>
+      <p class="wish-text cursive-body">May all the beauty and joy surround you always</p>
+      <p class="wish-text cursive-body">May every dream you hold blossom in its perfect time</p>
+      <p class="wish-text cursive-body">Grateful for every moment shared with you</p>
+    </div>
+  </section>
+
+  <!-- Screen 3 -->
+  <section id="screen3" aria-label="game">
+    <div class="controls-panel" id="wishPanel" role="region" aria-label="wish input">
+      <h3 class="cursive-title">Make a Wish</h3>
+      <input id="wishInput" class="input-wish" type="text" placeholder="Type your wish here..." aria-label="wish input" />
+      <div class="controls-row">
+        <button id="confirmBtn" class="btn">Confirm Wish ✨</button>
+        <button id="preset1" class="btn ghost">Stay happy every day</button>
+        <button id="preset2" class="btn ghost">Dreams come true</button>
       </div>
-    </section>
+    </div>
 
-    <!-- Screen 2 -->
-    <section id="screen2" aria-label="wishes">
-      <div style="max-width:1000px;text-align:center">
-        <p class="wish-text cursive-body">On this special day, may your smile shine as bright as the sun</p>
-        <p class="wish-text cursive-body">May all the beauty and joy surround you always</p>
-        <p class="wish-text cursive-body">May every dream you hold blossom in its perfect time</p>
-        <p class="wish-text cursive-body">Grateful for every moment shared with you</p>
-      </div>
-    </section>
+    <div class="video-wrapper" id="videoWrapper" aria-live="polite">
+      <video id="cakeVideo" autoplay muted playsinline preload="auto" loop>
+        <source src="burn.mp4" type="video/mp4">
+      </video>
+      <div id="wishOverlay" aria-hidden="false"></div>
+    </div>
 
-    <!-- Screen 3 (视频替代 3D) -->
-    <section id="screen3" aria-label="game">
-      <div class="controls-panel" id="wishPanel" role="region" aria-label="wish input">
-        <h3 class="cursive-title">Make a Wish</h3>
-        <input id="wishInput" class="input-wish" type="text" placeholder="Type your wish here..." aria-label="wish input" />
-        <div class="controls-row">
-          <button id="confirmBtn" class="btn">Confirm Wish ✨</button>
-          <button id="preset1" class="btn ghost">Stay happy every day</button>
-          <button id="preset2" class="btn ghost">Dreams come true</button>
-        </div>
+    <div class="controls-panel" id="actionPanel" style="display:none" role="region" aria-label="actions">
+      <div class="controls-row" style="justify-content:center">
+        <button id="blowBtn" class="btn">Blow Out Candles 🌬️</button>
+        <button id="backBtn" class="btn ghost">Go Back ↩️</button>
       </div>
+    </div>
+  </section>
 
-      <div class="video-wrapper" id="videoWrapper" aria-live="polite">
-        <video id="cakeVideo" autoplay muted playsinline preload="auto" loop>
-          <source src="burn.mp4" type="video/mp4">
-        </video>
-        <div id="wishOverlay" aria-hidden="false"></div>
-      </div>
-
-      <div class="controls-panel" id="actionPanel" style="display:none" role="region" aria-label="actions">
-        <div class="controls-row" style="justify-content:center">
-          <button id="blowBtn" class="btn">Blow Out Candles 🌬️</button>
-          <button id="backBtn" class="btn ghost">Go Back ↩️</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Screen 4 -->
-    <section id="screen4" aria-label="final">
-      <div style="text-align:center;z-index:3">
-        <div class="final-title cursive-title">May You Always Be Happy</div>
-        <div class="cursive-body" style="font-size:1.1rem;color:#d1d5db">✨ Happy Birthday, Dear Friend ✨</div>
-      </div>
-    </section>
-  </div>
+  <!-- Screen 4 -->
+  <section id="screen4" aria-label="final">
+    <div>
+      <div class="final-title cursive-title">May You Always Be Happy</div>
+      <div class="final-subtitle cursive-body">✨ Happy Birthday, Dear Friend ✨</div>
+    </div>
+  </section>
+</div>
 
 <script>
-/* ===================== 实现说明（内部注释丰富） ===================== */
-
-/* Utility: 防抖 */
 function debounce(fn,wait=150){let t;return(...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),wait)}}
 
-/* ---------- 粒子背景（稳健） ---------- */
 function buildParticles(){
-  const container=document.getElementById('particleBg');
-  container.innerHTML=''; // clear
-  const isMobile = window.innerWidth < 720;
-  const count = isMobile ? 60 : 140;
-  const colors = ['#ff6b9d','#ffa500','#00d2ff','#a8ff78','#f093fb','#ffd166'];
+  const container=document.getElementById('particleBg'); container.innerHTML='';
+  const isMobile=window.innerWidth<720; const count=isMobile?60:140;
+  const colors=['#ff6b9d','#ffa500','#00d2ff','#a8ff78','#f093fb','#ffd166'];
   for(let i=0;i<count;i++){
-    const el=document.createElement('div');
-    el.className='particle';
-    const size = Math.random()*6 + 2; // 2 ~ 8
-    const color = colors[Math.floor(Math.random()*colors.length)];
-    const left = Math.random()*100;
-    const top = Math.random()*110 - 5; // allow slight peek above
-    const dx = (Math.random()*2 - 1) * (10 + Math.random()*40); // move x
-    const dy = -(15 + Math.random()*70); // move up
-    const dur = 8 + Math.random()*18; // duration
-    const delay = -(Math.random()*dur); // negative delay for natural distribution
-
-    el.style.width = size + 'px';
-    el.style.height = size + 'px';
-    el.style.left = left + '%';
-    el.style.top = top + '%';
-    el.style.background = color;
-    el.style.opacity = (0.18 + Math.random()*0.7).toFixed(2);
-    el.style.boxShadow = `0 0 ${Math.max(6,size*3)}px ${color}`;
-    // custom properties for movement
-    el.style.setProperty('--dx', dx + 'px');
-    el.style.setProperty('--dy', dy + 'px');
-    el.style.animation = `particleMove ${dur}s linear ${delay}s infinite`;
-    el.style.borderRadius = '50%';
+    const el=document.createElement('div'); el.className='particle';
+    const size=Math.random()*6+2; const color=colors[Math.floor(Math.random()*colors.length)];
+    const left=Math.random()*100; const top=Math.random()*110-5;
+    const dx=(Math.random()*2-1)*(10+Math.random()*40); const dy=-(15+Math.random()*70);
+    const dur=8+Math.random()*18; const delay=-(Math.random()*dur);
+    el.style.width=size+'px'; el.style.height=size+'px'; el.style.left=left+'%'; el.style.top=top+'%';
+    el.style.background=color; el.style.opacity=(0.18+Math.random()*0.7).toFixed(2);
+    el.style.boxShadow=`0 0 ${Math.max(6,size*3)}px ${color}`;
+    el.style.setProperty('--dx',dx+'px'); el.style.setProperty('--dy',dy+'px');
+    el.style.animation=`particleMove ${dur}s linear ${delay}s infinite`; el.style.borderRadius='50%';
     container.appendChild(el);
   }
 }
 
-/* ---------- Section 亮度同步：IntersectionObserver ---------- */
 function initSectionObserver(){
-  const sections = document.querySelectorAll('section');
-  const options = {
-    root: null,
-    rootMargin: '-25% 0px -25% 0px', // 确保中间区域触发
-    threshold: [0, 0.25, 0.5, 0.75, 1]
-  };
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const el = entry.target;
-      const r = entry.intersectionRatio;
-      // 只有当可见比例 >= 0.5 时点亮
-      if (r >= 0.5) {
-        el.classList.add('active');
-      } else if (r === 0) {
-        // 完全离开视口再熄灭
-        el.classList.remove('active');
-      } else {
-        // 中间部分: 保持当前状态（避免提前点亮/闪烁）
-        // 不做任何操作
-      }
-    });
-  }, options);
-  sections.forEach(s => obs.observe(s));
+  if(!('IntersectionObserver' in window)){
+    document.querySelectorAll('section').forEach(s=>s.classList.add('active')); return;
+  }
+  const sections=document.querySelectorAll('section');
+  const options={root:null,rootMargin:'-25% 0px -25% 0px',threshold:[0,0.25,0.5,0.75,1]};
+  const obs=new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{const el=entry.target; const r=entry.intersectionRatio;
+      if(r>=0.5){el.classList.add('active');}else if(r===0){el.classList.remove('active');}});},options);
+  sections.forEach(s=>obs.observe(s));
 }
 
-/* ---------- 视频预加载与加载状态管理 ---------- */
-/* 返回 Promise，视频 canplaythrough 或 loadeddata 即算就绪 */
 function waitVideoReady(videoEl, timeout=8000){
   return new Promise((resolve,reject)=>{
     let done=false;
-    function onReady(){ if(done) return; done=true; cleanup(); resolve(); }
-    function onErr(){ if(done) return; done=true; cleanup(); reject(new Error('video load failed')); }
-    function cleanup(){
-      videoEl.removeEventListener('canplaythrough', onReady);
-      videoEl.removeEventListener('loadeddata', onReady);
-      videoEl.removeEventListener('error', onErr);
-    }
-    videoEl.addEventListener('canplaythrough', onReady, {once:true});
-    videoEl.addEventListener('loadeddata', onReady, {once:true});
-    videoEl.addEventListener('error', onErr, {once:true});
-    // timeout fallback
-    setTimeout(()=>{ if(!done){ done=true; cleanup(); resolve(); } }, timeout);
+    function onReady(){if(done) return; done=true; cleanup(); resolve();}
+    function onErr(){if(done) return; done=true; cleanup(); reject(new Error('video load failed'));}
+    function cleanup(){videoEl.removeEventListener('canplaythrough', onReady);videoEl.removeEventListener('loadeddata', onReady);videoEl.removeEventListener('error', onErr);}
+    videoEl.addEventListener('canplaythrough', onReady, {once:true}); videoEl.addEventListener('loadeddata', onReady, {once:true}); videoEl.addEventListener('error', onErr, {once:true});
+    setTimeout(()=>{if(!done){done=true;cleanup();resolve();}}, timeout);
   });
 }
 
-/* ---------- Wish / Controls 逻辑 ---------- */
-const UI = {
-  wishInput: null,
-  confirmBtn: null,
-  preset1: null,
-  preset2: null,
-  wishPanel: null,
-  actionPanel: null,
-  blowBtn: null,
-  backBtn: null,
-  cakeVideo: null,
-  wishOverlay: null,
-  videoWrapper: null
-};
-
-function escapeHtml(s){ return String(s).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
-
-function showWish(text){
-  const o = UI.wishOverlay;
-  o.innerHTML = `<div class="wish-display cursive-body">${escapeHtml(text)}</div>`;
-}
-
-function clearWish(){
-  UI.wishOverlay.innerHTML = '';
-}
-
-function enableControlsForConfirm(){
-  UI.wishPanel.style.display = 'none';
-  UI.actionPanel.style.display = 'block';
-}
-
-function resetToInput(){
-  UI.wishPanel.style.display = 'block';
-  UI.actionPanel.style.display = 'none';
-  clearWish();
-  UI.wishInput.value = '';
-}
-
-/* 点击确认愿望 */
-function onConfirm(){
-  const v = UI.wishInput.value.trim();
-  if(!v) return;
-  showWish(v);
-  enableControlsForConfirm();
-  // ensure burn video is looping (in case previously changed)
-  const video = UI.cakeVideo;
-  if (video.src.indexOf('burn.mp4') === -1) {
-    video.loop = true;
-    video.src = 'burn.mp4';
-    video.load();
-    video.play().catch(()=>{});
-  }
-}
-
-/* 点击吹灭 */
-function onBlow(){
-  // 防止重复点击
-  UI.blowBtn.disabled = true;
-  UI.backBtn.disabled = true;
-
-  const video = UI.cakeVideo;
-  // switch to blow.mp4, do not loop
-  video.loop = false;
-  // For reliable change, set src then load() then play()
-  video.src = 'blow.mp4';
-  video.load();
-  // clear overlay immediately
-  clearWish();
-
-  // Wait for loadeddata or canplaythrough, then play
-  waitVideoReady(video).then(()=>{
-    video.play().catch(()=>{});
-  });
-
-  // when blow video ends, show final message
-  function onEnded(){
-    // show final message
-    UI.wishOverlay.innerHTML = `<div class="final-message cursive-title">Your wish will come true ✨</div>`;
-    // disable blow button permanently until goBack
-    UI.blowBtn.disabled = true;
-    UI.backBtn.disabled = false;
-    video.removeEventListener('ended', onEnded);
-  }
-  video.addEventListener('ended', onEnded);
-}
-
-/* 点击返回 */
-function onBack(){
-  // revert to burn, re-enable inputs
-  const video = UI.cakeVideo;
-  video.loop = true;
-  video.src = 'burn.mp4';
-  video.load();
-  video.play().catch(()=>{});
-  resetToInput();
-  UI.blowBtn.disabled = false;
-  UI.backBtn.disabled = false;
-}
-
-/* 绑定 UI 元素 */
+const UI={};
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function showWish(text){UI.wishOverlay.innerHTML=`<div class="wish-display cursive-body">${escapeHtml(text)}</div>`;}
+function clearWish(){UI.wishOverlay.innerHTML='';}
+function enableControlsForConfirm(){UI.wishPanel.style.display='none'; UI.actionPanel.style.display='block';}
+function resetToInput(){UI.wishPanel.style.display='block'; UI.actionPanel.style.display='none'; clearWish(); UI.wishInput.value='';}
+function onConfirm(){const v=UI.wishInput.value.trim(); if(!v) return; showWish(v); enableControlsForConfirm(); const video=UI.cakeVideo; if(video.src.indexOf('burn.mp4')===-1){video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{});}}
+function onBlow(){UI.blowBtn.disabled=true; UI.backBtn.disabled=true; const video=UI.cakeVideo; video.loop=false; video.src='blow.mp4'; video.load(); clearWish(); waitVideoReady(video).then(()=>{video.play().catch(()=>{});}); video.addEventListener('ended',function onEnded(){UI.wishOverlay.innerHTML=`<div class="final-message cursive-title">Your wish will come true ✨</div>`; UI.blowBtn.disabled=true; UI.backBtn.disabled=false; video.removeEventListener('ended',onEnded);});}
+function onBack(){const video=UI.cakeVideo; video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{}); resetToInput(); UI.blowBtn.disabled=false; UI.backBtn.disabled=false;}
 function bindUI(){
-  UI.wishInput = document.getElementById('wishInput');
-  UI.confirmBtn = document.getElementById('confirmBtn');
-  UI.preset1 = document.getElementById('preset1');
-  UI.preset2 = document.getElementById('preset2');
-  UI.wishPanel = document.getElementById('wishPanel');
-  UI.actionPanel = document.getElementById('actionPanel');
-  UI.blowBtn = document.getElementById('blowBtn');
-  UI.backBtn = document.getElementById('backBtn');
-  UI.cakeVideo = document.getElementById('cakeVideo');
-  UI.wishOverlay = document.getElementById('wishOverlay');
-  UI.videoWrapper = document.getElementById('videoWrapper');
+  UI.wishInput=document.getElementById('wishInput');
+  UI.confirmBtn=document.getElementById('confirmBtn');
+  UI.preset1=document.getElementById('preset1');
+  UI.preset2=document.getElementById('preset2');
+  UI.wishPanel=document.getElementById('wishPanel');
+  UI.actionPanel=document.getElementById('actionPanel');
+  UI.blowBtn=document.getElementById('blowBtn');
+  UI.backBtn=document.getElementById('backBtn');
+  UI.cakeVideo=document.getElementById('cakeVideo');
+  UI.wishOverlay=document.getElementById('wishOverlay');
+  UI.videoWrapper=document.getElementById('videoWrapper');
 
-  UI.confirmBtn.addEventListener('click', onConfirm);
-  UI.blowBtn.addEventListener('click', onBlow);
-  UI.backBtn.addEventListener('click', onBack);
-  UI.preset1.addEventListener('click', ()=>{ UI.wishInput.value='Stay happy every day'; });
-  UI.preset2.addEventListener('click', ()=>{ UI.wishInput.value='Dreams come true'; });
-
-  // pressing Enter when input focused confirms
-  UI.wishInput.addEventListener('keypress', (e)=>{
-    if(e.key === 'Enter'){ onConfirm(); e.preventDefault(); }
-  });
+  UI.confirmBtn.addEventListener('click',onConfirm);
+  UI.blowBtn.addEventListener('click',onBlow);
+  UI.backBtn.addEventListener('click',onBack);
+  UI.preset1.addEventListener('click',()=>{UI.wishInput.value='Stay happy every day';});
+  UI.preset2.addEventListener('click',()=>{UI.wishInput.value='Dreams come true';});
+  UI.wishInput.addEventListener('keypress',(e)=>{if(e.key==='Enter'){onConfirm(); e.preventDefault();}});
 }
 
-/* ---------- 初始化：等待关键资源准备后隐藏 loading ---------- */
 async function init(){
-  // build particles and observer immediately (particles don't block)
   buildParticles();
   initSectionObserver();
-
-  // bind UI
   bindUI();
-
-  // wait for burn.mp4 to be ready (or timeout)
-  const video = UI.cakeVideo;
-  let videoReady = false;
-  try{
-    await waitVideoReady(video, 7000);
-    videoReady = true;
-  }catch(e){
-    videoReady = false;
-  }
-
-  // also wait a minimal time to allow fonts/particles to appear smooth
-  await new Promise(r=>setTimeout(r, 300));
-
-  // hide loading overlay only when videoReady or after fallback timeout
-  const loading = document.getElementById('loading');
-  loading.style.opacity = '0';
-  setTimeout(()=>{ loading.style.display = 'none'; }, 480);
-
-  // ensure autoplay attempt
-  try{ video.play().catch(()=>{}); }catch(e){}
+  const video=UI.cakeVideo;
+  try{await waitVideoReady(video,7000);}catch(e){}
+  await new Promise(r=>setTimeout(r,300));
+  const loading=document.getElementById('loading');
+  loading.style.opacity='0';
+  setTimeout(()=>{loading.style.display='none';},500);
 }
 
-/* ---------- 事件：resize rebuild particles（防抖） ---------- */
-window.addEventListener('resize', debounce(()=>{ buildParticles(); }, 200));
-
-/* ---------- 启动 ---------- */
-window.addEventListener('load', ()=>{
-  // assign UI.cakeVideo before init (used in waitVideoReady)
-  UI.cakeVideo = document.getElementById('cakeVideo');
-  init().catch(err=>{ console.warn('init error',err); const l=document.getElementById('loading'); l.style.opacity='0'; setTimeout(()=>l.style.display='none',480); });
-});
-
+window.addEventListener('load',init);
+window.addEventListener('resize',debounce(buildParticles,200));
 </script>
+
 </body>
 </html>
