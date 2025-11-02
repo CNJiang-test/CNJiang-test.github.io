@@ -22,11 +22,12 @@ body{
 /* Loading */
 #loading{
   position:fixed;inset:0;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
   background:#000;z-index:9999;
   transition:opacity .45s ease;
 }
-.loading-text{font-family:"Great Vibes",cursive;font-size:1.8rem;color:#a855f7;}
+.loading-text{font-family:"Great Vibes",cursive;font-size:1.8rem;color:#a855f7;margin-bottom:0.5rem;}
+.loading-hint{font-family:"Inter",sans-serif;font-size:0.9rem;color:#9ca3af;opacity:0.7;}
 
 /* Container */
 .container{
@@ -215,15 +216,14 @@ video{
   z-index:5;
 }
 
-/* 手机端修复 - 强制显示内容 */
+/* 手机端优化 - 保留动画效果 */
 @media (max-width:720px){
+  /* 移除强制覆盖，让动画自然触发 */
   section{
-    opacity:1 !important;
-    filter:brightness(1) !important;
+    /* 不再强制 opacity:1，让 IntersectionObserver 控制 */
   }
   #screen2 .wish-text{
-    opacity:1 !important;
-    transform:none !important;
+    /* 不再强制覆盖，保留过渡效果 */
   }
   .video-wrapper{
     max-width:90vw;
@@ -235,6 +235,15 @@ video{
   .controls-panel{padding:12px}
   .title-main{font-size:clamp(2.2rem,16vw,5.5rem)}
   .title-name{font-size:clamp(1.5rem,12vw,3.5rem)}
+  /* 确保内容在手机端最终可见 */
+  section.active{
+    opacity:1 !important;
+    filter:brightness(1) !important;
+  }
+  #screen2.active .wish-text{
+    opacity:1 !important;
+    transform:none !important;
+  }
 }
 
 /* keyframes */
@@ -255,7 +264,10 @@ video{
 <body>
 
 <!-- Loading -->
-<div id="loading"><div class="loading-text cursive-title">Loading Magic... ✨</div></div>
+<div id="loading">
+  <div class="loading-text cursive-title">Loading Magic... ✨</div>
+  <div class="loading-hint">(Please wait a few seconds to download all files)</div>
+</div>
 
 <!-- Particle 背景 -->
 <div id="particleBg" aria-hidden="true"></div>
@@ -345,12 +357,24 @@ function initSectionObserver(){
     document.querySelectorAll('section').forEach(s=>s.classList.add('active')); return;
   }
   const sections=document.querySelectorAll('section');
-  const options={root:null,rootMargin:'-25% 0px -25% 0px',threshold:[0,0.25,0.5,0.75,1]};
+  
+  // 检测是否为移动设备
+  const isMobile = window.innerWidth < 720;
+  
+  // 移动端使用更宽松的触发条件
+  const options = isMobile 
+    ? {root:null, rootMargin:'0px', threshold:[0, 0.1, 0.3, 0.5, 0.7, 1]}
+    : {root:null, rootMargin:'-25% 0px -25% 0px', threshold:[0, 0.25, 0.5, 0.75, 1]};
+  
   const obs=new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
       const el=entry.target; 
       const r=entry.intersectionRatio;
-      if(r>=0.5){
+      
+      // 移动端更低的阈值触发
+      const triggerThreshold = isMobile ? 0.3 : 0.5;
+      
+      if(r >= triggerThreshold){
         el.classList.add('active');
         // 触发烟花
         if(el.id==='screen4' && !window.fireworksStarted){
@@ -368,6 +392,12 @@ function initSectionObserver(){
     });
   },options);
   sections.forEach(s=>obs.observe(s));
+  
+  // 页面加载时立即激活第一屏
+  const firstSection = document.getElementById('screen1');
+  if(firstSection){
+    setTimeout(()=>firstSection.classList.add('active'), 100);
+  }
 }
 
 // ========== 烟花系统 ==========
