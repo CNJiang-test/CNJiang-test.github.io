@@ -1,499 +1,337 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="description" content="Interactive 3D Birthday Celebration (placeholder without 3D model)" />
-    <title>Happy Birthday Alisia</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Happy Birthday Alisia</title>
 
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #000;
-            color: #fff;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
+<style>
+/* ========== Base ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: #000;
+  color: #fff;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.container {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+section {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 2rem;
+  opacity: 0.25;
+  filter: brightness(0.55);
+  transition: opacity 0.8s ease, filter 0.8s ease;
+}
+section.active {
+  opacity: 1;
+  filter: brightness(1);
+}
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.3); }
-        ::-webkit-scrollbar-thumb { background: rgba(168,85,247,0.5); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(168,85,247,0.8); }
+/* ========== Typography ========== */
+.cursive-title { font-family: 'Great Vibes', cursive; }
+.cursive-body { font-family: 'Dancing Script', cursive; }
 
-        .container {
-            scroll-behavior: smooth;
-            height: 100vh;
-            overflow-y: scroll;
-            overflow-x: hidden;
-        }
+.title-main {
+  font-size: clamp(3rem, 15vw, 8rem);
+  background: linear-gradient(45deg, #ff6b9d, #ffa500, #00d2ff, #a8ff78);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: glow 2s ease-in-out infinite;
+}
+.title-name {
+  font-size: clamp(2rem, 10vw, 6rem);
+  color: #00d2ff;
+  text-shadow: 0 0 30px #00d2ff, 0 0 60px #00d2ff;
+}
 
-        section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            padding: 2rem;
-            /* 初始暗 */
-            opacity: 0.25;
-            filter: brightness(0.55);
-            transform-origin: center;
-            transition: opacity 0.7s ease, filter 0.7s ease, transform 0.7s ease;
-        }
+/* ========== Wishes Section ========== */
+.wish-text {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  text-align: center;
+  line-height: 1.6;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255,255,255,0.6);
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.75s ease, transform 0.75s ease;
+}
+#screen2.active .wish-text:nth-child(1) { transition-delay: 0s; opacity:1; transform:translateY(0); }
+#screen2.active .wish-text:nth-child(2) { transition-delay: 0.15s; opacity:1; transform:translateY(0); }
+#screen2.active .wish-text:nth-child(3) { transition-delay: 0.3s; opacity:1; transform:translateY(0); }
+#screen2.active .wish-text:nth-child(4) { transition-delay: 0.45s; opacity:1; transform:translateY(0); }
 
-        /* 激活（可见主区域）时的样式 */
-        section.active {
-            opacity: 1;
-            filter: brightness(1);
-            transform: translateY(0);
-        }
+/* ========== Game Section (Video Replacement) ========== */
+#screen3 {
+  flex-direction: column;
+  gap: 2rem;
+}
+.controls-panel {
+  background: rgba(17,24,39,0.7);
+  border: 1px solid rgba(107,114,128,0.5);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  backdrop-filter: blur(10px);
+  text-align: center;
+}
+input[type="text"] {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: rgba(17,24,39,0.9);
+  border: 2px solid #a855f7;
+  border-radius: 0.75rem;
+  color: #fff;
+  margin-bottom: 1rem;
+  transition: all 0.3s;
+}
+input[type="text"]:focus {
+  outline: none;
+  border-color: #ec4899;
+  box-shadow: 0 0 30px rgba(236,72,153,0.5);
+}
+button {
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin: 0.4rem;
+}
+.btn-primary {
+  background: linear-gradient(to right, #a855f7, #ec4899);
+  color: #fff;
+  box-shadow: 0 0 30px rgba(236,72,153,0.5);
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 40px rgba(236,72,153,0.7);
+}
 
-        /* Particle Background */
-        .particle-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
+/* Video Area */
+.video-area {
+  position: relative;
+  width: 100%;
+  max-width: 900px;
+  height: 500px;
+  border-radius: 1rem;
+  overflow: hidden;
+  background: #000;
+}
+video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+#wishOverlay {
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+}
+.wish-display {
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: #fff;
+  text-shadow: 0 0 30px rgba(255,255,255,0.9),
+               0 0 60px rgba(168,85,247,0.6),
+               0 0 90px rgba(236,72,153,0.4);
+  animation: wishAppear 0.7s ease-out forwards;
+}
+.final-message {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  background: linear-gradient(135deg, #a855f7, #ec4899, #f59e0b);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 40px rgba(168,85,247,0.8));
+  animation: wishAppear 0.7s ease-out forwards;
+  margin-top: 1rem;
+}
 
-        .particle {
-            position: absolute;
-            border-radius: 50%;
-            pointer-events: none;
-            will-change: transform, opacity;
-            animation-fill-mode: both;
-            mix-blend-mode: screen;
-            /* 默认较模糊以免抢视觉 */
-            filter: blur(0.4px);
-        }
+/* ========== Final Section ========== */
+.final-title {
+  font-size: clamp(3rem, 10vw, 7rem);
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.final-subtitle {
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  color: #d1d5db;
+  text-align: center;
+}
 
-        /* Typography */
-        .cursive-title { font-family: 'Great Vibes', cursive; font-weight: 400; }
-        .cursive-body { font-family: 'Dancing Script', cursive; font-weight: 400; }
+/* ========== Animations ========== */
+@keyframes glow {
+  0%,100% { filter: brightness(1) drop-shadow(0 0 20px currentColor); }
+  50% { filter: brightness(1.3) drop-shadow(0 0 40px currentColor); }
+}
+@keyframes wishAppear {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
 
-        /* Screen 1: Birthday Title */
-        #screen1 { text-align: center; z-index: 10; }
-        .title-main {
-            font-size: clamp(3rem, 15vw, 8rem);
-            background: linear-gradient(45deg, #ff6b9d, #c44569, #ffa500, #00d2ff, #a8ff78);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: glow 2s ease-in-out infinite;
-            margin-bottom: 1rem;
-        }
-        .title-name {
-            font-size: clamp(2rem, 10vw, 6rem);
-            color: #00d2ff;
-            text-shadow: 0 0 30px #00d2ff, 0 0 60px #00d2ff;
-        }
-
-        /* Screen 2: Wishes */
-        .wish-text {
-            font-size: clamp(1.5rem, 4vw, 3rem);
-            text-align: center;
-            color: #fff;
-            text-shadow: 0 0 20px rgba(255,255,255,0.6), 0 0 40px rgba(255,255,255,0.3);
-            margin: 2rem 0;
-            line-height: 1.6;
-            max-width: 900px;
-
-            /* 初始状态淡入效果 */
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.75s ease, transform 0.75s ease;
-        }
-
-        /* 分段延迟，进入时依次显现 */
-        #screen2.active .wish-text:nth-child(1) { transition-delay: 0s; opacity:1; transform:translateY(0); }
-        #screen2.active .wish-text:nth-child(2) { transition-delay: 0.15s; opacity:1; transform:translateY(0); }
-        #screen2.active .wish-text:nth-child(3) { transition-delay: 0.30s; opacity:1; transform:translateY(0); }
-        #screen2.active .wish-text:nth-child(4) { transition-delay: 0.45s; opacity:1; transform:translateY(0); }
-
-        /* Game container placeholder */
-        #screen3 { flex-direction: column; }
-        .game-container {
-            width: 100%;
-            max-width: 1400px;
-            display: grid;
-            grid-template-columns: 1fr 2fr 1fr;
-            gap: 2rem;
-            align-items: start;
-        }
-        @media (max-width: 1024px) {
-            .game-container { grid-template-columns: 1fr; gap: 1.5rem; }
-        }
-
-        .controls-panel {
-            background: rgba(17,24,39,0.7);
-            border: 1px solid rgba(107,114,128,0.5);
-            border-radius: 1rem;
-            padding: 1.5rem;
-            backdrop-filter: blur(10px);
-            z-index: 5;
-        }
-
-        .canvas-container {
-            width: 100%;
-            height: 600px;
-            position: relative;
-            border-radius: 1rem;
-            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        #wishOverlay {
-            position: absolute;
-            top: 10%;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 100;
-            text-align: center;
-            width: 90%;
-            pointer-events: none;
-        }
-
-        .wish-display {
-            font-size: clamp(1.2rem, 3vw, 2rem);
-            color: #fff;
-            text-shadow: 0 0 30px rgba(255,255,255,0.9),
-                         0 0 60px rgba(168,85,247,0.6),
-                         0 0 90px rgba(236,72,153,0.4);
-            line-height: 1.6;
-            animation: wishAppear 0.7s ease-out forwards;
-        }
-
-        .final-message {
-            font-size: clamp(2rem, 5vw, 4rem);
-            background: linear-gradient(135deg, #a855f7, #ec4899, #f59e0b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 40px rgba(168,85,247,0.8));
-            animation: wishAppear 0.7s ease-out forwards;
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 0.875rem 1rem;
-            background: rgba(17,24,39,0.9);
-            border: 2px solid #a855f7;
-            border-radius: 0.75rem;
-            color: #fff;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            margin-bottom: 1rem;
-            box-shadow: 0 0 20px rgba(168,85,247,0.3);
-            transition: all 0.3s;
-        }
-        input[type="text"]:focus { outline: none; border-color: #ec4899; box-shadow: 0 0 30px rgba(236,72,153,0.5); }
-        input::placeholder { color: #6b7280; }
-
-        button {
-            width: 100%;
-            padding: 0.875rem 1.5rem;
-            border: none;
-            border-radius: 0.75rem;
-            font-size: 1rem;
-            font-weight: 600;
-            font-family: 'Inter', sans-serif;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 0.75rem;
-            touch-action: manipulation;
-        }
-        .btn-primary { background: linear-gradient(to right, #a855f7, #ec4899); color:#fff; box-shadow:0 0 30px rgba(236,72,153,0.5); }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 40px rgba(236,72,153,0.7); }
-
-        .instructions { background: rgba(17,24,39,0.7); border: 1px solid rgba(107,114,128,0.5); border-radius:1rem; padding:1.5rem; backdrop-filter: blur(10px); }
-
-        .instruction-item { display:flex; align-items:flex-start; margin-bottom:1rem; font-size:0.875rem; color:#d1d5db; line-height:1.5; }
-        .instruction-item span { font-size:1.5rem; margin-right:0.75rem; }
-
-        /* Screen 4: Final */
-        .final-title {
-            font-size: clamp(3rem, 10vw, 7rem);
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 40px rgba(102,126,234,0.6));
-            text-align: center;
-            margin-bottom: 2rem;
-            position: relative;
-            z-index: 10;
-        }
-        .final-subtitle { font-size: clamp(1.5rem, 3vw, 2rem); color:#d1d5db; text-align:center; position:relative; z-index:10; }
-
-        /* Animations */
-        @keyframes glow {
-            0%,100% { filter: brightness(1) drop-shadow(0 0 20px currentColor); }
-            50% { filter: brightness(1.3) drop-shadow(0 0 40px currentColor); }
-        }
-        @keyframes wishAppear {
-            0% { opacity: 0; transform: translateY(30px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-
-        /* particleFloat: 更自然的漂浮轨迹（随机速度由 JS 控制） */
-        @keyframes particleFloat {
-            0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.25; }
-            25% { transform: translate3d(15px, -20px, 0) scale(1.05); opacity: 0.9; }
-            50% { transform: translate3d(-10px, -40px, 0) scale(1.2); opacity: 0.6; }
-            75% { transform: translate3d(-20px, -20px, 0) scale(1.05); opacity: 0.85; }
-            100% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.25; }
-        }
-
-        /* Scroll indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: 2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 40px;
-            border: 2px solid #fff;
-            border-radius: 20px;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-            padding: 8px;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-            z-index: 10;
-        }
-        .scroll-dot {
-            width: 4px;
-            height: 12px;
-            background: #fff;
-            border-radius: 4px;
-            animation: float 2s ease-in-out infinite;
-        }
-        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
-
-        /* Loading */
-        .loading {
-            position: fixed; top: 0; left: 0; width:100%; height:100%;
-            background:#000; display:flex; align-items:center; justify-content:center; z-index:9999;
-            transition: opacity 0.5s;
-        }
-        .loading-text { font-size:2rem; color:#a855f7; animation: glow 1.5s ease-in-out infinite; }
-    </style>
+/* Loading */
+.loading {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #000;
+  display: flex; align-items: center; justify-content: center;
+  z-index: 9999;
+  transition: opacity 0.5s;
+}
+.loading-text {
+  font-size: 2rem;
+  color: #a855f7;
+  animation: glow 1.5s ease-in-out infinite;
+}
+</style>
 </head>
+
 <body>
-    <div class="loading" id="loading">
-        <div class="loading-text cursive-title">Loading Magic... ✨</div>
+<div class="loading" id="loading">
+  <div class="loading-text cursive-title">Loading Magic... ✨</div>
+</div>
+
+<div class="container" id="mainContainer">
+  <!-- Screen 1 -->
+  <section id="screen1">
+    <div>
+      <h1 class="title-main cursive-title">Happy Birthday</h1>
+      <h2 class="title-name cursive-title">Alisia</h2>
+    </div>
+  </section>
+
+  <!-- Screen 2 -->
+  <section id="screen2">
+    <div style="max-width:1000px">
+      <p class="wish-text cursive-body">On this special day, may your smile shine as bright as the sun</p>
+      <p class="wish-text cursive-body">May all the beauty and joy surround you always</p>
+      <p class="wish-text cursive-body">May every dream you hold blossom in its perfect time</p>
+      <p class="wish-text cursive-body">Grateful for every moment shared with you</p>
+    </div>
+  </section>
+
+  <!-- Screen 3 (Video Game Replacement) -->
+  <section id="screen3">
+    <div class="controls-panel" id="wishPanel">
+      <h3 class="cursive-title" style="font-size:2rem; margin-bottom:1rem;
+      background: linear-gradient(to right, #a855f7, #ec4899);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+        Make a Wish
+      </h3>
+
+      <input type="text" id="wishInput" placeholder="Type your wish here..." />
+      <button class="btn-primary" id="confirmBtn">Confirm Wish ✨</button>
     </div>
 
-    <div class="particle-bg" id="particleBg"></div>
-
-    <div class="container" id="mainContainer">
-        <!-- Screen 1: Happy Birthday -->
-        <section id="screen1">
-            <div>
-                <h1 class="title-main cursive-title">Happy Birthday</h1>
-                <h2 class="title-name cursive-title">Alisia</h2>
-                <div class="scroll-indicator">
-                    <div class="scroll-dot"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Screen 2: Wishes -->
-        <section id="screen2">
-            <div style="max-width:1000px;">
-                <p class="wish-text cursive-body" data-delay="0">On this special day, may your smile shine as bright as the sun</p>
-                <p class="wish-text cursive-body" data-delay="0.3">May all the beauty and joy surround you always</p>
-                <p class="wish-text cursive-body" data-delay="0.6">May every dream you hold blossom in its perfect time</p>
-                <p class="wish-text cursive-body" data-delay="0.9">Grateful for every moment shared with you</p>
-            </div>
-        </section>
-
-        <!-- Screen 3: Game Placeholder (蛋糕建模已删除，保留占位) -->
-        <section id="screen3">
-            <div class="game-container">
-                <!-- Left Controls -->
-                <div class="controls-panel">
-                    <div id="wishInputSection">
-                        <h3 class="cursive-title" style="font-size:2rem; text-align:center; margin-bottom:1.5rem;
-                            background: linear-gradient(to right, #a855f7, #ec4899); -webkit-background-clip:text; -webkit-text-fill-color:transparent;">
-                            Make a Wish
-                        </h3>
-
-                        <input type="text" id="wishInput" placeholder="Type your wish here..." />
-                        <button class="btn-primary" id="confirmBtn">Confirm Wish ✨</button>
-
-                        <div style="margin-top:1rem;">
-                            <p style="color:#9ca3af; font-size:0.875rem; font-weight:500; text-align:center; margin-bottom:0.75rem;">QUICK SELECT</p>
-                            <div style="display:flex; flex-wrap:wrap; gap:0.5rem; justify-content:center;">
-                                <button class="preset-btn" onclick="selectPreset('Ace all exams')">Ace all exams</button>
-                                <button class="preset-btn" onclick="selectPreset('Stay happy every day')">Stay happy every day</button>
-                                <button class="preset-btn" onclick="selectPreset('Dreams come true')">Dreams come true</button>
-                                <button class="preset-btn" onclick="selectPreset('Health and joy')">Health and joy</button>
-                                <button class="preset-btn" onclick="selectPreset('Adventure awaits')">Adventure awaits</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Center: future game area (目前为空的占位容器) -->
-                <div class="canvas-container" id="futureGameArea">
-                    <!-- future canvas or game will be mounted here -->
-                    <div id="wishOverlay"></div>
-                    <div style="color:#9ca3af; font-size:0.95rem; text-align:center; padding:1rem;">
-                        Game placeholder. Cake/3D model removed. Insert new game or animation here later.
-                    </div>
-                </div>
-
-                <!-- Right Instructions -->
-                <div class="instructions">
-                    <h4 class="cursive-title" style="font-size:1.5rem; color:#a855f7; margin-bottom:1rem;">How to Play</h4>
-
-                    <div class="instruction-item"><span>1️⃣</span><p>Type your birthday wish or choose a preset</p></div>
-                    <div class="instruction-item"><span>2️⃣</span><p>Watch your wish appear in the overlay</p></div>
-                    <div class="instruction-item"><span>3️⃣</span><p>When ready, replace placeholder with your game or animation</p></div>
-                    <div class="instruction-item"><span>✨</span><p>Watch the magic unfold!</p></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Screen 4: Final Message -->
-        <section id="screen4">
-            <div>
-                <h2 class="final-title cursive-title">May You Always Be Happy</h2>
-                <p class="final-subtitle cursive-body">✨ Happy Birthday, Dear Friend ✨</p>
-            </div>
-        </section>
+    <div class="video-area">
+      <video id="cakeVideo" autoplay muted loop playsinline>
+        <source src="burn.mp4" type="video/mp4" />
+      </video>
+      <div id="wishOverlay"></div>
     </div>
 
-    <!-- 脚本（不含 Three.js，已删除所有建模与动画逻辑） -->
-    <script>
-        /* ---------- 粒子背景（修复：不再静止，具有层次与随机速度） ---------- */
-        function createParticles() {
-            const particleBg = document.getElementById('particleBg');
-            particleBg.innerHTML = ''; // 清空旧的
-            const particleCount = window.innerWidth < 768 ? 60 : 140;
+    <div class="controls-panel" id="actionPanel" style="display:none;">
+      <button class="btn-primary" id="blowBtn">Blow Out Candles 🌬️</button>
+      <button class="btn-primary" id="backBtn">Go Back ↩️</button>
+    </div>
+  </section>
 
-            const colors = ['#ff6b9d', '#ffa500', '#00d2ff', '#a8ff78', '#f093fb', '#ffd166'];
+  <!-- Screen 4 -->
+  <section id="screen4">
+    <div>
+      <h2 class="final-title cursive-title">May You Always Be Happy</h2>
+      <p class="final-subtitle cursive-body">✨ Happy Birthday, Dear Friend ✨</p>
+    </div>
+  </section>
+</div>
 
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
+<script>
+/* ---------- Section Fade Observer ---------- */
+function initObserver() {
+  const sections = document.querySelectorAll('section');
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.intersectionRatio >= 0.5) e.target.classList.add('active');
+      else if (e.intersectionRatio === 0) e.target.classList.remove('active');
+    });
+  }, { threshold: [0, 0.5, 1], rootMargin: '-25% 0px -25% 0px' });
+  sections.forEach(s => observer.observe(s));
+}
 
-                const size = Math.random() * 6 + 2; // 更明显的尺寸差异
-                const color = colors[Math.floor(Math.random() * colors.length)];
-                const left = Math.random() * 100;
-                const top = Math.random() * 110; // 允许稍微超出顶部，以增强流动感
+/* ---------- Wish Logic ---------- */
+function confirmWish() {
+  const val = document.getElementById('wishInput').value.trim();
+  if (!val) return;
+  document.getElementById('wishPanel').style.display = 'none';
+  document.getElementById('actionPanel').style.display = 'block';
+  const w = document.getElementById('wishOverlay');
+  w.innerHTML = `<div class="wish-display cursive-body">${escapeHtml(val)}</div>`;
+}
+function blowCandles() {
+  const v = document.getElementById('cakeVideo');
+  v.loop = false;
+  v.src = 'blow.mp4';
+  v.play();
+  document.getElementById('wishOverlay').innerHTML = '';
+  setTimeout(() => {
+    document.getElementById('wishOverlay').innerHTML =
+      '<div class="final-message cursive-title">Your wish will come true ✨</div>';
+  }, 2000); // 2秒后出现祝语，可按视频时长调整
+}
+function goBack() {
+  const v = document.getElementById('cakeVideo');
+  v.src = 'burn.mp4';
+  v.loop = true;
+  v.play();
+  document.getElementById('wishPanel').style.display = 'block';
+  document.getElementById('actionPanel').style.display = 'none';
+  document.getElementById('wishOverlay').innerHTML = '';
+  document.getElementById('wishInput').value = '';
+}
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, m => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[m]));
+}
 
-                // 深度决定速度、透明与模糊程度
-                const depth = Math.random() * 1.8 + 0.6; // 0.6 ~ 2.4
-                const duration = (8 + Math.random() * 24) / depth; // 深景慢，近景快
-                const delay = Math.random() * -duration; // 负延迟为更自然分布起点
+/* ---------- Init ---------- */
+window.addEventListener('load', () => {
+  initObserver();
+  document.getElementById('confirmBtn').onclick = confirmWish;
+  document.getElementById('blowBtn').onclick = blowCandles;
+  document.getElementById('backBtn').onclick = goBack;
 
-                particle.style.width = size + 'px';
-                particle.style.height = size + 'px';
-                particle.style.left = left + '%';
-                particle.style.top = top + '%';
-                particle.style.backgroundColor = color;
-                particle.style.opacity = (0.15 + Math.random() * 0.7).toFixed(2);
-                particle.style.boxShadow = `0 0 ${Math.max(6, size * 3)}px ${color}`;
-                particle.style.animation = `particleFloat ${duration}s cubic-bezier(.2,.7,.2,1) ${delay}s infinite`;
-                particle.style.zIndex = Math.round(depth * 10);
-                // 轻微模糊和缩放与深度挂钩
-                particle.style.filter = `blur(${(1.8 - depth) * 1.2}px)`;
-                particleBg.appendChild(particle);
-            }
-        }
-
-        /* ---------- Section 亮度同步：使用 IntersectionObserver ---------- */
-        function initSectionObservers() {
-            const sections = document.querySelectorAll('section');
-
-            // rootMargin 向内收 25%，确保"进入视口中心或主要可见部分"再触发
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    const ratio = entry.intersectionRatio;
-
-                    // 规则：
-                    // 1) 当可见比例 >= 0.5 时，设置 active（逐渐变亮）
-                    // 2) 当完全离开视口（ratio === 0）时，再移除 active（逐渐变暗）
-                    // 3) 其它部分可见但小于 0.5 时，不主动点亮（避免提前亮起）
-                    if (ratio >= 0.5) {
-                        entry.target.classList.add('active');
-                    } else if (ratio === 0) {
-                        entry.target.classList.remove('active');
-                    } else {
-                        // 仍保留已激活状态直到完全离开，但防止提前激活
-                        // 不移除 active 以防闪烁；如果想严格按"完全离开才变暗"，注释以下行
-                        // entry.target.classList.remove('active');
-                    }
-                });
-            }, {
-                root: null,
-                rootMargin: '-25% 0px -25% 0px',
-                threshold: [0, 0.25, 0.5, 0.75, 1]
-            });
-
-            sections.forEach(sec => observer.observe(sec));
-        }
-
-        /* ---------- 许愿逻辑（保留，简单显示文本并淡入） ---------- */
-        function selectPreset(text) {
-            const input = document.getElementById('wishInput');
-            if (input) input.value = text;
-        }
-
-        function confirmWish() {
-            const wish = document.getElementById('wishInput').value.trim();
-            if (!wish) return;
-            const overlay = document.getElementById('wishOverlay');
-            overlay.innerHTML = `<div class="wish-display cursive-body">${escapeHtml(wish)}</div>`;
-        }
-
-        // 简单防 XSS
-        function escapeHtml(str) {
-            return str.replace(/[&<>"']/g, function (m) {
-                return ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' })[m];
-            });
-        }
-
-        /* ---------- 初始化（载入时） ---------- */
-        window.addEventListener('load', () => {
-            createParticles();
-            initSectionObservers();
-
-            // 绑定 confirm 按钮
-            const confirmBtn = document.getElementById('confirmBtn');
-            if (confirmBtn) confirmBtn.addEventListener('click', confirmWish);
-
-            // hide loading
-            setTimeout(() => {
-                const loading = document.getElementById('loading');
-                loading.style.opacity = '0';
-                setTimeout(() => { loading.style.display = 'none'; }, 500);
-            }, 700);
-        });
-
-        // 窗口大小变化时重建粒子以适配数量和分布
-        let resizeTimer = null;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(() => {
-                createParticles();
-            }, 200);
-        });
-    </script>
+  setTimeout(() => {
+    const l = document.getElementById('loading');
+    l.style.opacity = '0';
+    setTimeout(() => l.style.display = 'none', 500);
+  }, 700);
+});
+</script>
 </body>
 </html>
