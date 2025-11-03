@@ -354,7 +354,7 @@ function buildParticles(){
 
 function initSectionObserver(){
   if(!('IntersectionObserver' in window)){
-    document.querySelectorAll('section').forEach(s=>s.classList.add('active')); return;
+    document.querySelectorAll('section').forEach(s=>activateSection(s)); return;
   }
   const sections=document.querySelectorAll('section');
   
@@ -363,7 +363,7 @@ function initSectionObserver(){
   
   // 移动端使用更宽松的触发条件
   const options = isMobile 
-    ? {root:null, rootMargin:'0px', threshold:[0, 0.1, 0.3, 0.5, 0.7, 1]}
+    ? {root:null, rootMargin:'0px', threshold:[0, 0.1, 0.2, 0.3, 0.5, 0.7, 1]}
     : {root:null, rootMargin:'-25% 0px -25% 0px', threshold:[0, 0.25, 0.5, 0.75, 1]};
   
   const obs=new IntersectionObserver((entries)=>{
@@ -372,17 +372,21 @@ function initSectionObserver(){
       const r=entry.intersectionRatio;
       
       // 移动端更低的阈值触发
-      const triggerThreshold = isMobile ? 0.3 : 0.5;
+      const triggerThreshold = isMobile ? 0.2 : 0.5;
       
       if(r >= triggerThreshold){
-        el.classList.add('active');
+        // 使用强制动画触发机制
+        activateSection(el);
+        
         // 触发烟花
         if(el.id==='screen4' && !window.fireworksStarted){
           window.fireworksStarted=true;
-          initFireworks();
+          // 延迟启动烟花，确保动画先完成
+          setTimeout(()=>initFireworks(), 300);
         }
       }else if(r===0){
-        el.classList.remove('active');
+        deactivateSection(el);
+        
         // 停止烟花
         if(el.id==='screen4'){
           window.fireworksStarted=false;
@@ -391,13 +395,38 @@ function initSectionObserver(){
       }
     });
   },options);
+  
   sections.forEach(s=>obs.observe(s));
   
   // 页面加载时立即激活第一屏
   const firstSection = document.getElementById('screen1');
   if(firstSection){
-    setTimeout(()=>firstSection.classList.add('active'), 100);
+    setTimeout(()=>activateSection(firstSection), 100);
   }
+}
+
+// 强制动画触发函数 - 确保动画100%执行
+function activateSection(section){
+  // 如果已经激活，跳过
+  if(section.classList.contains('active')) return;
+  
+  // 1. 先移除active类，确保处于初始状态
+  section.classList.remove('active');
+  
+  // 2. 强制浏览器重排（触发reflow）
+  void section.offsetHeight;
+  
+  // 3. 使用双重RAF确保在正确的帧触发
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>{
+      section.classList.add('active');
+    });
+  });
+}
+
+// 平滑退出动画
+function deactivateSection(section){
+  section.classList.remove('active');
 }
 
 // ========== 烟花系统 ==========
