@@ -55,6 +55,13 @@ section.active{
   filter:brightness(1);
 }
 
+/* 游戏部分无动画 */
+#screen3{
+  opacity:1 !important;
+  filter:brightness(1) !important;
+  transition:none !important;
+}
+
 /* Typography */
 .cursive-title{font-family:"Great Vibes",cursive}
 .cursive-body{font-family:"Dancing Script",cursive}
@@ -555,6 +562,22 @@ function stopFireworks(){
 }
 
 // ========== 视频与交互 ==========
+let videoPreloaded = false;
+
+// 预加载视频函数
+function preloadVideo(src){
+  return new Promise((resolve)=>{
+    const tempVideo = document.createElement('video');
+    tempVideo.preload = 'auto';
+    tempVideo.src = src;
+    tempVideo.addEventListener('loadeddata', ()=>resolve(), {once:true});
+    tempVideo.addEventListener('error', ()=>resolve(), {once:true}); // 即使失败也继续
+    tempVideo.load();
+    // 5秒超时
+    setTimeout(()=>resolve(), 5000);
+  });
+}
+
 function waitVideoReady(videoEl, timeout=8000){
   return new Promise((resolve,reject)=>{
     let done=false;
@@ -568,13 +591,95 @@ function waitVideoReady(videoEl, timeout=8000){
 
 const UI={};
 function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function showWish(text){UI.wishOverlay.innerHTML=`<div class="wish-display cursive-body">${escapeHtml(text)}</div>`;}
-function clearWish(){UI.wishOverlay.innerHTML='';}
-function enableControlsForConfirm(){UI.wishPanel.style.display='none'; UI.actionPanel.style.display='block';}
-function resetToInput(){UI.wishPanel.style.display='block'; UI.actionPanel.style.display='none'; clearWish(); UI.wishInput.value='';}
-function onConfirm(){const v=UI.wishInput.value.trim(); if(!v) return; showWish(v); enableControlsForConfirm(); const video=UI.cakeVideo; if(video.src.indexOf('burn.mp4')===-1){video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{});}}
-function onBlow(){UI.blowBtn.disabled=true; UI.backBtn.disabled=true; const video=UI.cakeVideo; video.loop=false; video.src='blow.mp4'; video.load(); clearWish(); waitVideoReady(video).then(()=>{video.play().catch(()=>{});}); video.addEventListener('ended',function onEnded(){UI.wishOverlay.innerHTML=`<div class="final-message cursive-title">Your wish will come true ✨</div>`; UI.blowBtn.disabled=true; UI.backBtn.disabled=false; video.removeEventListener('ended',onEnded);});}
-function onBack(){const video=UI.cakeVideo; video.loop=true; video.src='burn.mp4'; video.load(); video.play().catch(()=>{}); resetToInput(); UI.blowBtn.disabled=false; UI.backBtn.disabled=false;}
+
+function showWish(text){
+  UI.wishOverlay.innerHTML='';
+  // 使用RAF确保DOM更新后再添加内容
+  requestAnimationFrame(()=>{
+    UI.wishOverlay.innerHTML=`<div class="wish-display cursive-body">${escapeHtml(text)}</div>`;
+  });
+}
+
+function clearWish(){
+  UI.wishOverlay.innerHTML='';
+}
+
+function enableControlsForConfirm(){
+  UI.wishPanel.style.display='none'; 
+  UI.actionPanel.style.display='block';
+}
+
+function resetToInput(){
+  UI.wishPanel.style.display='block'; 
+  UI.actionPanel.style.display='none'; 
+  clearWish(); 
+  UI.wishInput.value='';
+}
+
+function onConfirm(){
+  const v=UI.wishInput.value.trim(); 
+  if(!v) return; 
+  
+  showWish(v); 
+  enableControlsForConfirm(); 
+  
+  const video=UI.cakeVideo; 
+  if(video.src.indexOf('burn.mp4')===-1){
+    video.loop=true; 
+    video.src='burn.mp4'; 
+    video.load(); 
+    // 延迟播放，避免阻塞UI动画
+    setTimeout(()=>{
+      video.play().catch(()=>{});
+    }, 100);
+  }
+}
+
+function onBlow(){
+  UI.blowBtn.disabled=true; 
+  UI.backBtn.disabled=true; 
+  
+  const video=UI.cakeVideo; 
+  video.loop=false; 
+  video.src='blow.mp4'; 
+  video.load(); 
+  
+  // 先清除愿望，确保动画流畅
+  clearWish(); 
+  
+  waitVideoReady(video).then(()=>{
+    video.play().catch(()=>{});
+  }); 
+  
+  video.addEventListener('ended',function onEnded(){
+    // 使用RAF确保在正确时机显示最终消息
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        UI.wishOverlay.innerHTML=`<div class="final-message cursive-title">Your wish will come true ✨</div>`;
+      });
+    });
+    
+    UI.blowBtn.disabled=true; 
+    UI.backBtn.disabled=false; 
+    video.removeEventListener('ended',onEnded);
+  });
+}
+
+function onBack(){
+  const video=UI.cakeVideo; 
+  video.loop=true; 
+  video.src='burn.mp4'; 
+  video.load(); 
+  
+  // 延迟播放，优先UI更新
+  setTimeout(()=>{
+    video.play().catch(()=>{});
+  }, 100);
+  
+  resetToInput(); 
+  UI.blowBtn.disabled=false; 
+  UI.backBtn.disabled=false;
+}
 function bindUI(){
   UI.wishInput=document.getElementById('wishInput');
   UI.confirmBtn=document.getElementById('confirmBtn');
@@ -597,15 +702,41 @@ function bindUI(){
 }
 
 async function init(){
+  // 1. 先创建粒子（轻量级操作）
   buildParticles();
-  initSectionObserver();
+  
+  // 2. 绑定UI（同步操作）
   bindUI();
-  const video=UI.cakeVideo;
-  try{await waitVideoReady(video,7000);}catch(e){}
-  await new Promise(r=>setTimeout(r,300));
+  
+  // 3. 预加载所有视频（并行）
+  console.log('Preloading videos...');
+  const video = UI.cakeVideo;
+  
+  try{
+    // 并行预加载所有视频
+    await Promise.all([
+      waitVideoReady(video, 6000),
+      preloadVideo('blow.mp4'),
+      preloadVideo('reburn.mp4')
+    ]);
+    console.log('All videos preloaded');
+    videoPreloaded = true;
+  }catch(e){
+    console.warn('Video preload timeout, continuing anyway');
+  }
+  
+  // 4. 初始化滚动观察器（动画系统）
+  initSectionObserver();
+  
+  // 5. 短暂延迟后隐藏loading
+  await new Promise(r=>setTimeout(r, 300));
+  
   const loading=document.getElementById('loading');
   loading.style.opacity='0';
-  setTimeout(()=>{loading.style.display='none';},500);
+  setTimeout(()=>{
+    loading.style.display='none';
+    console.log('Initialization complete');
+  }, 500);
 }
 
 window.addEventListener('load',init);
